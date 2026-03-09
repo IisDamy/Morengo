@@ -1,35 +1,176 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import {
+  TabBarProvider,
+  useTabBarVisibility,
+} from "@/contexts/TabBarVisibilityContext";
+import { TabBarIconProps } from "@/types";
+import { BottomTabBar } from "@react-navigation/bottom-tabs";
+import { Tabs } from "expo-router";
+import React from "react";
+import { Image, View } from "react-native";
+import Animated from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { color, images } from "../../constants/index";
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+const TabLayout = () => {
+  const { animatedStyle } = useTabBarVisibility();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+
+const TabHome  = ({ focused, icon, title, position }: TabBarIconProps) => {
+    return (
+      <View className="top-[50%] border-zinc-500  relative border-r w-[94]">
+           <View
+        className={`my-0 border  border-1 p-2 rounded-full self-center `}
+        style={{
+          borderColor: focused ? color.morange : "#5D5F6D",
+          left:position
+        }}
+      >
+        <Image
+          source={icon}
+          className="size-5"
+          resizeMode="contain"
+          tintColor={focused ? color.morange : "#5D5F6D"}
+        />
+      </View>
+      </View>
+     
+    );
+  };
+
+
+  const TabBarIcon = ({ focused, icon, title, position }: TabBarIconProps) => {
+    return (
+      <View
+        className={`my-0 border border-1 p-2 rounded-full self-center ${
+          title === "Home" ? "right-0" : ""} top-[50%]  relative`}
+        style={{
+          borderColor: focused ? color.morange : "#5D5F6D",
+          left:position
+        }}
+      >
+        <Image
+          source={icon}
+          className="size-5"
+          resizeMode="contain"
+          tintColor={focused ? color.morange : "#5D5F6D"}
+        />
+      </View>
+    );
+  };
+
+  function AnimatedTabBar(props: any) {
+    
+
+    return (
+      <Animated.View style={[{}, animatedStyle]}>
+        <BottomTabBar {...props} />
+      </Animated.View>
+    );
+  }
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+      <Tabs
+        tabBar={(props) => <AnimatedTabBar {...props} />}
+        screenOptions={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarHideOnKeyboard: true,
+
+          tabBarStyle: {
+            //customize styling of this
+            // it basically accepts css properties
+            backgroundColor: "#fafafae8",
+            borderRadius: 30,
+            paddingBottom: 0,
+            position: "absolute",
+            paddingVertical: "auto",
+            marginHorizontal: 20,
+            shadowColor: "#1a1a1a",
+            height: 70,
+
+            shadowOffset: {
+              width: 1,
+              height: -0.5,
+            },
+            elevation: 2,
+            shadowOpacity: 0.25,
+          },
         }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Home",
+            tabBarIcon: ({ focused }) => (
+              <TabHome title="Home" icon={images.home} focused={focused} position={null}/>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="location"
+          options={{
+            title: "Location",
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon title="Location" icon={images.home} focused={focused} position={30}/>
+            ),
+          }}
+        />
+
+
+         <Tabs.Screen
+          name="cart"
+          options={{
+            title: "Cart",
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon
+                title="Cart"
+                icon={images.home}
+                position={20}
+                focused={focused}
+              />
+            ),
+          }}
+        />
+
+         <Tabs.Screen
+          name="orders"
+          options={{
+            title: "Orders",
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon
+                title="Orders"
+                position={10}
+                icon={images.home}
+                focused={focused}
+              />
+            ),
+          }}
+        />
+
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: "Profile",
+            tabBarIcon: ({ focused }) => (
+              <TabBarIcon
+                title="Profile"
+                position={0}
+                icon={images.profile}
+                focused={focused}
+              />
+            ),
+          }}
+        />
+
+      </Tabs>
+    </SafeAreaView>
+  );
+};
+export default function Layout() {
+  return (
+    <TabBarProvider>
+      <TabLayout />
+    </TabBarProvider>
   );
 }

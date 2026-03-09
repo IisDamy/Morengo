@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: white,
+}
+
+
+@layer utilities {
+
+
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
+
+    .flex-between {
+        @apply flex items-center justify-between;
+    }
+
+    .flex-start {
+        @apply flex items-start justify-center;
+    }
+    .aid-box {
+        @apply flex flex-col flex-wrap bg-blue-300;
+    }
+    .open-favourite {
+     @apply w-[85%] h-[240] p-4  mb-8 rounded-2xl;
+   }
+}
+
+@layer components {
+   
+}
