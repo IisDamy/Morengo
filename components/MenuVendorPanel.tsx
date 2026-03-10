@@ -23,11 +23,7 @@ const vendors = [
         ratings:"4.5",
         contact:"",
     },
-     {
-        vendorName:"Item-7",
-        ratings:"4.5",
-        contact:"",
-    }
+
   
 ]
 

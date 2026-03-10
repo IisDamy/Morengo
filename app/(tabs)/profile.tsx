@@ -7,17 +7,24 @@ import { ScrollView } from 'react-native'
 import { useTabBarVisibility } from '@/contexts/TabBarVisibilityContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
-import { signOut } from '@/lib/appwrite'
+import { signOut, updateUser } from '@/lib/appwrite'
 
 const Profile = () => {
   const { onScroll } = useTabBarVisibility();
+    const [enablePromoNotifs, setEnablePromoNotifs] = useState(true);
+    const [enableNotifs, setEnableNotifs] = useState(true);
 
-    const [isEnabled, setIsEnabled] = useState(false);
-    const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
+    const toggleSwitchNotifs = () => setEnableNotifs(previousState => !previousState);
+    const toggleSwitchPromo = () => setEnablePromoNotifs(prev => !prev)
   const LogOff = async () => {
+  try{
     await signOut()
     router.replace('/(auth)/sign-in')
+  }
+  catch(e){
+    
+  }
   }
 
 
@@ -82,17 +89,17 @@ const Profile = () => {
              >Notifications
              </Text>
 
-        <Pressable onPress={toggleSwitch}>
+        <Pressable onPress={toggleSwitchNotifs}>
           <View className='border-b py-5 justify-between items-center flex-row border-zinc-300'>
           <Text>Notification</Text>
-          <ToggleButton isEnabled={isEnabled} toggleSwitch={toggleSwitch}/>
+          <ToggleButton isEnabled={enableNotifs} toggleSwitch={toggleSwitchNotifs}/>
        </View>
         </Pressable>   
        
-       <Pressable onPress={toggleSwitch}>
+       <Pressable onPress={toggleSwitchPromo}>
         <View className='border-b py-5 justify-between items-center flex-row border-zinc-300'>
         <Text>Promotional Notification</Text>
-        <ToggleButton isEnabled={isEnabled} toggleSwitch={toggleSwitch}/>
+        <ToggleButton isEnabled={enablePromoNotifs} toggleSwitch={toggleSwitchPromo}/>
         </View>
        </Pressable>
 

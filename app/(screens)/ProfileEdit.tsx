@@ -1,23 +1,43 @@
 import { View, Text, TouchableOpacity, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import Back from '@/components/Back'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import useAuthStore from '@/store/auth.store'
-import { CustomInput } from '@/components'
+import { CustomDropdown, CustomInput } from '@/components'
+import { router } from 'expo-router'
+import { updateUser } from '@/lib/appwrite'
+
 
 const ProfileEdit = () => {
 
   const {user} = useAuthStore()
-  const [isEditing, setIsEditing] = useState(false)
+  const [focus, toggleFocus] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+      const [form, setForm] = useState({
+      name:user?.name,
+      email:user?.email,
+      number:user?.number,
+      institution:user?.institution
+    })
+
+ const handleSave = async () => {
+  try{
+    await updateUser({
+      name:form.name, 
+      email:form.email, 
+      number:form.number, 
+      institution:form.institution, 
+      accountId:user?.accountId})
+
+
+  }
+  catch(e){
+
+  }
+ }
   return (
     <SafeAreaView className='w-full flex items-center px-6 pt-2'>
-        {isEditing?
-        <View className='mx-6 mt-20'>
-            <CustomInput focus={true}/>
-        </View>
-        
-:
       <View className='w-full items-center'>
       <View className='flex-row w-full justify-between'>
         <Back />
@@ -41,44 +61,56 @@ const ProfileEdit = () => {
 
         }}
       >
-       <TouchableOpacity onPress={()=>setIsEditing(true)}>
+  
            <View className='flex-row items-center justify-between'>
-            <Text>{user?.name}</Text>
+            <TextInput
+              value={form.name}
+              className='w'
+
+            />
             <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'}/>
         </View>
-       </TouchableOpacity>
+    
        
-       <TouchableOpacity onPress={()=>setIsEditing(true)}>
+       <TouchableOpacity onPress={() => router.push('/(screens)/ResetPassword')}>
           <View className='flex-row items-center justify-between'>
-            <Text>Password</Text>
+            <Text>*******</Text>
             <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'}/>
         </View > 
        </TouchableOpacity>
      
-      <TouchableOpacity onPress={()=>setIsEditing(true)}>
+     
           <View className='flex-row items-center justify-between'>
-            <Text>{user?.email}</Text>
+            <TextInput
+            value={form.email}
+            />
             <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'}/>
         </View >
-      </TouchableOpacity>
 
-      <TouchableOpacity onPress={()=>setIsEditing(true)}>
+
           <View className='flex-row items-center justify-between'>
-            <Text>{user?.number}</Text>
+            <TextInput
+              value={form.number}
+            />
             <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'}/>
         </View>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={()=>setIsEditing(true)}>
+  
+     
         <View className='flex-row items-center  justify-between'>
-            <Text className='w-[60%]'>{user?.institution}</Text>
+          <View className='w-[78%]'>
+            <CustomDropdown 
+            value={form.institution}
+            
+            />
+          </View>
+            
             <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'} className=''/>
         </View>
        
-      </TouchableOpacity>
+  
 
       </View>
-        </View>}
+        </View>
     </SafeAreaView>
 
   )

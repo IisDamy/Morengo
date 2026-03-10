@@ -114,8 +114,8 @@ export default function Index() {
             <MenuVendorPanel />
 
             
-            <View className="mt-12 w-full bg-black h-[100] rounded-[30]">
-            <Text>MORENGO</Text>
+            <View className="mt-12 w-full  h-[100] rounded-[30]">
+            <Text>ORDER ANYTHING NOW!!</Text>
             <Text>MORENGO</Text>
             
           </View>

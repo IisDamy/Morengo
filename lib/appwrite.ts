@@ -1,6 +1,7 @@
-import { CreateUserParams, GetMenuParams, SignInParams } from "@/types";
+import { CreateUserParams, GetMenuParams, SignInParams, UpdateUserProps } from "@/types";
 import { makeRedirectUri } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
+import * as Linking from 'expo-linking';
 import {
   Account,
   Avatars,
@@ -14,8 +15,19 @@ import {
 import { User } from "@/types";
 
 
+// # dont forget to delete this and add complete eas build for secrets before launch
+// # use eas secret:list to get already created secrets
+
+// # use this to replace keys
+// # import Constants from 'expo-constants';
+// # const { appwriteDatabaseId, appwriteProjectId } = Constants.expoConfig.extra;
+
 
 export const appwriteConfig = {
+
+  // # dont forget to delete this and add complete eas build before launch
+
+
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT!,
   databaseId: "69736bf7000636aa3743",
@@ -95,39 +107,36 @@ export const SignIn = async ({ email, password }: SignInParams) => {
 
 export const OAuthSignIn = async () => {
   try {
-    const deepLink = new URL(makeRedirectUri({ preferLocalhost: true }));
-const scheme = `${deepLink.protocol}//`;
+    const redirectUri = Linking.createURL('/') 
 
-
-
-const loginUrl = await account.createOAuth2Token({
+    const loginUrl = await account.createOAuth2Token({
     provider: OAuthProvider.Google,
-    success: `${deepLink}`,
-    failure: `${deepLink}`,
+    success:redirectUri
 });
+  if(!loginUrl) throw new Error('Failed to login')
 
-const result = await WebBrowser.openAuthSessionAsync(`${loginUrl}`, scheme);
+const result = await WebBrowser.openAuthSessionAsync(`${loginUrl}`, redirectUri);
 
 if (result.type !== 'success' || !result.url) {
-    throw new Error('OAuth authentication failed or was cancelled');
+    throw new Error('Failed to login');
 }
 
 const url = new URL(result.url);
-const secret = url.searchParams.get('secret');
-const userId = url.searchParams.get('userId');
+const secret = url.searchParams.get('secret')?.toString();
+const userId = url.searchParams.get('userId')?.toString();
 
+if(!secret || !userId) throw new Error('Failed to login')
 // Create session with OAuth credentials
-await account.createSession({
+const session = await account.createSession({
     userId,
     secret
 });
+
+if (!session) throw new Error('Failed to create session')
+return true
   } catch (e) {
-    console.error("=== OAuth Sign In Error ===");
-    console.error("Error details:", e);
-    console.error("Error message:", e instanceof Error ? e.message : String(e));
-    throw new Error(
-      `OAuth sign-in failed: ${e instanceof Error ? e.message : String(e)}`,
-    );
+    console.error(e)
+    return false
   }
 };
 
@@ -135,10 +144,11 @@ await account.createSession({
 
 export const signOut = async () => {
   try {
-    await account.deleteSession({ sessionId: "current" });
+     await account.deleteSession({ sessionId: "current" });
+     return true
   } catch (error) {
     console.error("Sign Out Error:", error);
-    throw error;
+    return false
   }
 };
 
@@ -154,7 +164,7 @@ export const getCurrentUser = async () => {
       tableId: appwriteConfig.userCollectionId,
       queries: [Query.equal("accountId", currentAccount.$id)],
     });
-    console.log(currentUser)
+
     if (!currentAccount) throw Error;
     return currentUser.rows[0];
   } catch (e) {
@@ -164,23 +174,22 @@ export const getCurrentUser = async () => {
 
 
 
-
 // call this function periodically to refresh OAuth token
 // call when user visits app
-export const OAuthRefreshToken = async () => {
-  try {
-    let session = await account.getSession({ sessionId: "current" });
-    //  don't know if this actually updates at expiry
-    if (
-      session?.providerAccessTokenExpiry &&
-      new Date(session.providerAccessTokenExpiry) === new Date()
-    ) {
-      const newSession = await account.updateSession({ sessionId: "current" });
-    }
-  } catch (e) {
-    throw new Error(e as string);
-  }
-};
+// export const OAuthRefreshToken = async () => {
+//   try {
+//     let session = await account.getSession({ sessionId: "current" });
+//     //  don't know if this actually updates at expiry
+//     if (
+//       session?.providerAccessTokenExpiry &&
+//       new Date(session.providerAccessTokenExpiry) === new Date()
+//     ) {
+//       const newSession = await account.updateSession({ sessionId: "current" });
+//     }
+//   } catch (e) {
+//     throw new Error(e as string);
+//   }
+// };
 
 export const getMenu = async ({ category, query }: GetMenuParams) => {
   try {
@@ -250,15 +259,45 @@ export const createOrder = async ({
   }
 };
 
+
+export const recoverPassword = async (email:string)=>{
+  try{
+
+    const redirectUri = Linking.createURL('/') 
+     await account.createRecovery({
+      email,
+      url:redirectUri
+    })
+
+    return { success: true };
+
+  }
+catch(e:any){
+  console.error(e)
+  return {
+      success: false,
+      message: e?.message || "Failed to initiate password recovery",
+    };
+}
+}
+
+
 // can make this general function for updating where we set tableid, pass accountid and pass data
 // finish ts
-export const updateUser = async <Models.Document & T>(accountId:string, data:Partial) => {
+export const updateUser = async ({name, institution, accountId, number }:User) => {
 try{
+
   const promise = await tablesDB.updateRow({
     databaseId:appwriteConfig.databaseId,
     tableId:'user',
     rowId:accountId,
-    data
+    data:{
+      name,
+      institution,
+      number,
+
+
+    }
   })
 }
 catch(e){

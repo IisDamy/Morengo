@@ -1,7 +1,7 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import { color } from "@/constants";
-import { SignIn as EmailSignIn, OAuthSignIn } from "@/lib/appwrite";
+import { SignIn as EmailSignIn, OAuthSignIn, recoverPassword } from "@/lib/appwrite";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import useAuthStore from '@/store/auth.store'
@@ -113,7 +113,7 @@ export default function SignIn() {
           secureTextEntry={true}
         />
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push('/(screens)/ResetPassword')}>
           <Text className={`text-right text-green-300 tracking-wide`}>
             Forgot Password?
           </Text>

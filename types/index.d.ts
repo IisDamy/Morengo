@@ -20,18 +20,19 @@ export interface Category extends Models.Document {
 
 
 export interface User extends Models.Document {
-    name: string;
-    email: string;
+    name: string | undefined;
+    email: string | undefined;
     avatar: string;
     role?: 'Admin' | 'DeliveryPerson' | 'Customer';
-    number:string;
-    institution:string;
+    number:string | undefined;
+    institution:string | undefined;
     PhotoUrl?:string;
     points?:number;
-    phone:string;
     accountId:string;
 
 }
+
+
 
 export interface CartCustomization {
     id: string;

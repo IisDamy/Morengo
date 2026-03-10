@@ -2,10 +2,11 @@ import { View, Text, TouchableOpacity, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
-
-const LocationChangeButton = () => {
-    const [currentLocation, setCurrentLocation] = useState('Home')
-    const [open, toggleOpen] = useState(false)
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming
+} from "react-native-reanimated";
 
     const temporary = [
         {
@@ -16,14 +17,40 @@ const LocationChangeButton = () => {
         }
     ]
 
-    const changeLocation = (loc:string) => {
+
+const LocationChangeButton = () => {
+    const [currentLocation, setCurrentLocation] = useState('Home')
+    const [open, toggleOpen] = useState(false)
+    const scale = useSharedValue(0);
+    const opacity = useSharedValue(0);
+
+        const changeLocation = (loc:string) => {
         setCurrentLocation(loc)
-        toggleOpen(false)
+     
+        handleToggle();
     }
+
+    const handleToggle = () => {
+  const newState = !open;
+  toggleOpen(newState);
+
+  scale.value = withTiming(newState ? 1 : 0, { duration: 220 });
+  opacity.value = withTiming(newState ? 1 : 0, { duration: 180 });
+};
+
+
+    const animatedDropdownStyle = useAnimatedStyle(() => {
+  return {
+    transform: [{ scaleY: scale.value }],
+    opacity: opacity.value
+  };
+});
+
+
 
   return (
         <>
-            <Pressable onPress={()=>toggleOpen(prev => !prev)} >
+            <Pressable onPress={handleToggle} >
                  <View className="flex flex-row  items-center">
                   <Ionicons
                     name="location-outline"
@@ -47,18 +74,20 @@ const LocationChangeButton = () => {
 
            {/* supposed to roll down, use ai */}
            {
-           open &&
+         
            
-            <View className='absolute  rounded-b-[5]  left-[6] py-1 bg-white  top-[22]'>
+            <Animated.View 
+            style={[animatedDropdownStyle, { transformOrigin: "top" }]}
+            className='absolute border border-t-[0] rounded-b-[5]  px-2 left-[6] pb-1 bg-green-100  top-[22]'>
                 
                     {temporary.map((item)=>
                     <Pressable onPress={()=> changeLocation(item.name)}>
-                    <Text className='border-b px-4 py-1 border-zinc-300'>{item.name}</Text>
+                    <Text className='border-b px-2  py-1 border-zinc-300 text-sm'>{item.name}</Text>
                     </Pressable>
                     )}
                 
                     
-            </View>
+            </Animated.View>
                     }
         </>
   )
