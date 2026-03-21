@@ -1,4 +1,4 @@
-import { CreateUserParams, GetMenuParams, SignInParams, UpdateUserProps } from "@/types";
+import { Address, CreateUserParams, GetMenuParams, SignInParams} from "@/types";
 import { makeRedirectUri } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from 'expo-linking';
@@ -13,6 +13,7 @@ import {
   TablesDB,
 } from "react-native-appwrite";
 import { User } from "@/types";
+import { refreshAuthStore, clearAuthStore } from "./useAppwrite";
 
 
 // # dont forget to delete this and add complete eas build for secrets before launch
@@ -54,12 +55,16 @@ export const tablesDB = new TablesDB(client);
 // if avatars means what i think it means, remove
 const avatars = new Avatars(client);
 
+
+
+
 export const createUser = async ({
   email,
   password,
   name,
   institution,
   number,
+  isStudent
 
 }: CreateUserParams) => {
   try {
@@ -74,8 +79,8 @@ export const createUser = async ({
     await SignIn({ email, password });
 
     // let avatarUrl = avatars.getInitialsURL(name);
-
-    await tablesDB.createRow({
+    if(newAccount){
+        await tablesDB.createRow({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.userCollectionId,
       rowId: ID.unique(),
@@ -83,11 +88,15 @@ export const createUser = async ({
         accountId: newAccount.$id,
         email,
         name,
-        // avatar: avatarUrl,
         institution,
         number,
-      },
-    });
+        isStudent
+      }
+    
+    })
+    }
+    else throw new Error('Failed to create user')
+    
   } catch (e) {
     throw new Error(e as string);
   }
@@ -99,6 +108,7 @@ export const SignIn = async ({ email, password }: SignInParams) => {
       email,
       password,
     });
+    //  await refreshAuthStore(); 
   } catch (e) {
     throw new Error(e as string);
   }
@@ -131,7 +141,7 @@ const session = await account.createSession({
     userId,
     secret
 });
-
+ await refreshAuthStore(); 
 if (!session) throw new Error('Failed to create session')
 return true
   } catch (e) {
@@ -145,6 +155,7 @@ return true
 export const signOut = async () => {
   try {
      await account.deleteSession({ sessionId: "current" });
+      await clearAuthStore();
      return true
   } catch (error) {
     console.error("Sign Out Error:", error);
@@ -234,30 +245,30 @@ export const getOrders = async ({ category, query }: GetMenuParams) => {
 
 // addresses should be also saved in local storage
 
-export const createOrder = async ({
-  itemId,
-  quantity,
-  addressId,
-}: {
-  itemId: string;
-  quantity: number;
-  addressId: string;
-}) => {
-  try {
-    const order = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.orderCollectionId,
-      {
-        itemId,
-        quantity,
-        addressId,
-      },
-    );
-    return order;
-  } catch (e) {
-    throw new Error(e as string);
-  }
-};
+// export const createOrder = async ({
+//   itemId,
+//   quantity,
+//   addressId,
+// }: {
+//   itemId: string;
+//   quantity: number;
+//   addressId: string;
+// }) => {
+//   try {
+//     const order = await databases.createDocument(
+//       appwriteConfig.databaseId,
+//       appwriteConfig.orderCollectionId,
+//       {
+//         itemId,
+//         quantity,
+//         addressId,
+//       },
+//     );
+//     return order;
+//   } catch (e) {
+//     throw new Error(e as string);
+//   }
+// };
 
 
 export const recoverPassword = async (email:string)=>{
@@ -282,26 +293,73 @@ catch(e:any){
 }
 
 
+
+
+
+
 // can make this general function for updating where we set tableid, pass accountid and pass data
 // finish ts
-export const updateUser = async ({name, institution, accountId, number }:User) => {
-try{
+export const updateUser = async ({
+  name,
+  institution,
+  number,
+  accountId,
+  email
+}: {
+  name:string | undefined,
+  institution:string | undefined,
+  number:string | undefined,
+  accountId:string | undefined,
+  email:string | undefined
+}) => {
+  try {
+    // 1️⃣ Update user fields ONLY if provided
+      await tablesDB.updateRow({
+        databaseId: appwriteConfig.databaseId,
+        tableId: "user",
+        rowId: accountId,
+        data: {
+          name,
+          institution,
+          number,
+          email
+        }
+        
+      });  
+    await refreshAuthStore();                   
+  return true;
 
-  const promise = await tablesDB.updateRow({
-    databaseId:appwriteConfig.databaseId,
-    tableId:'user',
-    rowId:accountId,
-    data:{
-      name,
-      institution,
-      number,
+  } catch (e: any) {
+    throw new Error(e.message || "Failed to update user");
+  }
+};
 
 
-    }
-  })
-}
-catch(e){
-  throw new Error(e as string)
-}
-}
-// probably going to use ai to make all components
+
+
+
+export const updateUserAddress  = async ({
+  addresses,
+  accountId
+}: {
+  addresses:Address ,
+  accountId:string
+}) => {
+  try {
+    // 1️⃣ Update user fields ONLY if provided
+      await tablesDB.updateRow({
+        databaseId: appwriteConfig.databaseId,
+        tableId: "user",
+        rowId: accountId,
+        data: {
+          addresses
+        }
+        
+      });  
+    await refreshAuthStore();                   
+  return true;
+
+  } catch (e: any) {
+    throw new Error(e.message || "Failed to update user");
+  }
+};

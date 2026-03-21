@@ -14,13 +14,13 @@ export function TabBarProvider({children}:{children:React.ReactNode}){
 
         if (diff > 3 && currentOffsetY>0) {
             translateY.value = withTiming(TAB_BAR_HEIGHT, {
-                duration:200,
+                duration:300,
                 easing:Easing.out(Easing.cubic)
             })
         }
         else if (diff < -3){
             translateY.value = withTiming(0, {
-                duration:250,
+                duration:350,
                 easing:Easing.in(Easing.cubic)
             })
         }

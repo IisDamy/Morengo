@@ -12,6 +12,7 @@ const CustomInput = ({
   onChangeText,
   maxLength,
   label,
+  style,
   secureTextEntry = false,
   keyboardType = "default",
 }: CustomInputProps) => {

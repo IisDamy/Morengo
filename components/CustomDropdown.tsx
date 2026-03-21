@@ -2,11 +2,11 @@ import { View, Text, TouchableOpacity, GestureResponderEvent } from 'react-nativ
 import React,{useState} from 'react'
 import DropDownPicker, { RenderListItemPropsInterface } from 'react-native-dropdown-picker';
 import { universities } from '@/constants';
-import { CustomDropdownProps } from '@/types';
+import { CustomComponentProps } from '@/types';
 
 
 
-const CustomDropdown = ({value, onValueChange}: CustomDropdownProps) => {
+const CustomDropdown = ({value, onValueChange}: CustomComponentProps) => {
   const items = universities.map((item) => ({
     label: item,
     value: item, // value can just be the string itself

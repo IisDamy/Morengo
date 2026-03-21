@@ -17,18 +17,30 @@ export interface Category extends Models.Document {
     description: string;
 }
 
+export interface Address {
+  coords:number[] | [];
+  name: string;
+  country: string;
+  isDefault?: boolean;
+  type:string;       
+  // optional, default could be false
+  // add any other fields your table has (e.g., label, lat, lng)
+}
 
 
 export interface User extends Models.Document {
-    name: string | undefined;
-    email: string | undefined;
-    avatar: string;
-    role?: 'Admin' | 'DeliveryPerson' | 'Customer';
-    number:string | undefined;
-    institution:string | undefined;
+    name?: string | undefined;
+    email?: string | undefined;
+    avatar?: string;
+    role?: 'Admin' | 'DeliveryPerson' | 'Customer' | 'Vendor' | 'Vendor+';
+    number?:string | undefined;
+    institution?:string | undefined;
     PhotoUrl?:string;
     points?:number;
-    accountId:string;
+    accountId?:string;
+    isStudent?:boolean;
+    addresses?: Address[];
+
 
 }
 
@@ -89,6 +101,7 @@ interface CustomButtonProps {
     leftIcon?: React.ReactNode;
     textStyle?: string;
     isLoading?: boolean;
+    disabled?:boolean;
 }
 
 interface CustomHeaderProps {
@@ -103,7 +116,8 @@ interface CustomInputProps {
     label: string;
     secureTextEntry?: boolean;
     keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
-    autoFocus?:false
+    autoFocus?:false,
+    style?:string
 }
 
 interface ProfileFieldProps {
@@ -118,6 +132,7 @@ interface CreateUserParams {
     name: string;
     institution:string;
     number:string;
+    isStudent:boolean;
 }
 
 interface SignInParams {
@@ -137,7 +152,7 @@ interface ManifestoProps {
 }
 // Roles
 
-interface CustomDropdownProps {
+interface CustomComponentProps {
     value: string;
     onValueChange: (value: string) => void;
 }

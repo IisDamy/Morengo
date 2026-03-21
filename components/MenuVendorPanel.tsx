@@ -76,10 +76,10 @@ const MenuVendorPanel = () => {
         </View>
 
         <TouchableOpacity>
-        <Text className='mt-10 pb-10 border-b border-zinc-300 
-        text-orange-300 tracking-wider text-md w-full text-center 
+        <Text className='mt-10 pb-10 
+        text-orange-300 tracking-wider text-sm w-full text-center 
         font-bold '>
-            See all
+            See more
         </Text>
         </TouchableOpacity>
         

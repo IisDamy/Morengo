@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import Animated, {
@@ -7,6 +7,8 @@ import Animated, {
   useAnimatedStyle,
   withTiming
 } from "react-native-reanimated";
+import useAuthStore from '@/store/auth.store';
+
 
     const temporary = [
         {
@@ -19,6 +21,8 @@ import Animated, {
 
 
 const LocationChangeButton = () => {
+    const {user} = useAuthStore()
+
     const [currentLocation, setCurrentLocation] = useState('Home')
     const [open, toggleOpen] = useState(false)
     const scale = useSharedValue(0);
@@ -29,6 +33,10 @@ const LocationChangeButton = () => {
      
         handleToggle();
     }
+
+    useEffect(()=>{
+      console.log(user?.addresses)
+    },[open])
 
     const handleToggle = () => {
   const newState = !open;

@@ -4,15 +4,23 @@ import {
 } from "@/contexts/TabBarVisibilityContext";
 import { TabBarIconProps } from "@/types";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";
-import { Tabs } from "expo-router";
-import React from "react";
+import { Tabs, Redirect } from "expo-router";
+import React,{useEffect} from "react";
 import { Image, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { color, images } from "../../constants/index";
+import useAuthStore from "@/store/auth.store";
+import SplashScreen2 from "../(screens)/SplashScreen";
+import { getCurrentUser } from "@/lib/appwrite";
 
 const TabLayout = () => {
-  const { animatedStyle } = useTabBarVisibility();
+const { isAuthenticated } = useAuthStore();
+if(!isAuthenticated) return <Redirect href="/sign-in" />
+
+const { animatedStyle } = useTabBarVisibility();
+
+
 
 
 const TabHome  = ({ focused, icon, title, position }: TabBarIconProps) => {
@@ -85,6 +93,7 @@ const TabHome  = ({ focused, icon, title, position }: TabBarIconProps) => {
             paddingBottom: 0,
             position: "absolute",
             paddingVertical: "auto",
+            marginBottom: 10,
             marginHorizontal: 20,
             shadowColor: "#1a1a1a",
             height: 70,

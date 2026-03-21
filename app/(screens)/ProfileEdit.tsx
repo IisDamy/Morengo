@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import Back from '@/components/Back'
@@ -23,17 +23,20 @@ const ProfileEdit = () => {
 
  const handleSave = async () => {
   try{
-    await updateUser({
+   const result = await updateUser({
+      accountId:user?.$id,
       name:form.name, 
       email:form.email, 
       number:form.number, 
-      institution:form.institution, 
-      accountId:user?.accountId})
-
+      institution:form.institution})
+    if(!result){
+      throw new Error('Update failed')
+    }
+    else{Alert.alert('Profile Updated')}
 
   }
   catch(e){
-
+    console.error(e)
   }
  }
   return (
@@ -42,8 +45,8 @@ const ProfileEdit = () => {
       <View className='flex-row w-full justify-between'>
         <Back />
         
-        <TouchableOpacity >
-            <Text className='font-bold text-green-300'>Save</Text>
+        <TouchableOpacity onPress={handleSave}>
+            <Text className='font-bold text-xl p-1 text-pink-400'>Save</Text>
         </TouchableOpacity>
       </View>
   
@@ -65,10 +68,13 @@ const ProfileEdit = () => {
            <View className='flex-row items-center justify-between'>
             <TextInput
               value={form.name}
-              className='w'
+              className='w-full'
+                onChangeText={(text) => {
+            setForm({ ...form, name: text });
+          }}
 
             />
-            <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'}/>
+            <MaterialIcons name='mode-edit-outline' className='relative right-5' size={20} color={'#C2C2CB'}/>
         </View>
     
        
@@ -82,31 +88,39 @@ const ProfileEdit = () => {
      
           <View className='flex-row items-center justify-between'>
             <TextInput
+            className='w-full'
             value={form.email}
+               onChangeText={(text) => {
+            setForm({ ...form, email: text });
+          }}
             />
-            <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'}/>
+            <MaterialIcons name='mode-edit-outline' className='relative right-5' size={20} color={'#C2C2CB'}/>
         </View >
 
 
           <View className='flex-row items-center justify-between'>
             <TextInput
+              className='w-full'
               value={form.number}
+                 onChangeText={(text) => {
+            setForm({ ...form, number: text });
+          }}
             />
-            <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'}/>
+            <MaterialIcons name='mode-edit-outline' className='relative right-5' size={20} color={'#C2C2CB'}/>
         </View>
   
      
-        <View className='flex-row items-center  justify-between'>
+    { user?.isStudent &&   <View className='flex-row items-center  justify-between'>
           <View className='w-[78%]'>
             <CustomDropdown 
             value={form.institution}
-            
+            onValueChange={(value) => setForm({...form, institution:value})}
             />
           </View>
             
-            <MaterialIcons name='mode-edit-outline' size={20} color={'#C2C2CB'} className=''/>
+            <MaterialIcons name='mode-edit-outline'  size={20} color={'#C2C2CB'} />
         </View>
-       
+       }
   
 
       </View>

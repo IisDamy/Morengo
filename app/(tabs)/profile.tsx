@@ -8,8 +8,11 @@ import { useTabBarVisibility } from '@/contexts/TabBarVisibilityContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import { signOut, updateUser } from '@/lib/appwrite'
+import useAuthStore from '@/store/auth.store'
+
 
 const Profile = () => {
+  
   const { onScroll } = useTabBarVisibility();
     const [enablePromoNotifs, setEnablePromoNotifs] = useState(true);
     const [enableNotifs, setEnableNotifs] = useState(true);
@@ -33,6 +36,7 @@ const Profile = () => {
         <ScrollView
     onScroll={onScroll}
           scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
   >
       <View className='profile items-center px-6  h-fit'
 
@@ -45,15 +49,15 @@ const Profile = () => {
       <View className=' w-full px-10 flex-row justify-between mb-6 flex items-center'>
         <View className='flex items-center'>
           <View className='rounded-full w-10 h-10 border'></View>
-          <Text>History</Text>
+          <Text className='text-sm mt-2'>History</Text>
         </View>
          <View className='flex items-center'>
           <View className='rounded-full w-10 h-10 border'></View>
-          <Text>Address</Text>
+          <Text className='text-sm mt-2'>Address</Text>
         </View>
         <View className='flex items-center'>
           <View className='rounded-full w-10 h-10 border'></View>
-          <Text>My Points</Text>
+          <Text className='text-sm mt-2'>My Points</Text>
         </View>
         
 
@@ -127,12 +131,12 @@ const Profile = () => {
    
         </View>
       {/* logout */}
-       <View>
+     
         <TouchableOpacity onPress={LogOff}>
-          <Text className='font-bold'>Log Out</Text>
+          <Text className='font-black p-1 mt-0  mr-4 text-red-600 self-end'>Log Out</Text>
         </TouchableOpacity>
       
-       </View>
+       
       
       </View>
     </View>

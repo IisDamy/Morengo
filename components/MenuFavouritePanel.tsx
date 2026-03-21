@@ -48,17 +48,17 @@ const categories = [
 
 
 const MenuFavouritePanel = ({seeAll}:MenuFavouritePanelProps) => {
-
+// clcking items links to buy item page, also holding brinngs out add to cart option
 
 
   return (
-    <View className=' mt-4 mb-3 w-screen pr-6'>
-        <ScrollView horizontal={!seeAll} 
+    <View className=' mt-4 mb-3  w-screen pl-5 '>
+        <ScrollView horizontal={true} 
         showsHorizontalScrollIndicator={false}
         >
            {categories.map((item) =>
         //    bigger view shows price
-        <View className={` rounded bg-[#F8F8F8]  p-2 mx-1 my-2  w-[240] h-[220] ${seeAll? 'open-favourite':'rounded-3xl mr-6'} `}
+        <View className={` rounded bg-[#F8F8F8]  p-2 mx-1 my-2  w-[240] h-[220] rounded-3xl mr-6 `}
             style={{
             
             shadowColor: "#1a1a1a",

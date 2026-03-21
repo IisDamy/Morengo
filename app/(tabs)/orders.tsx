@@ -3,7 +3,8 @@ import React,{useState} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { color } from '@/constants'
 import { TabsHeader } from '@/components'
-
+// long hold pending to cancel order
+// after we're done with everything, slide animatiion between header groups
 
 const orders = () => {
   const [activeGroup, setActiveGroup] = useState('Pending')
@@ -13,11 +14,11 @@ const orders = () => {
     <SafeAreaView className='h-full w-full items-center'>
       
         
-        <View className='h-full w-full flex px-6 items-center'>
+        <View className='h-full w-full bg-white flex px-6 items-center'>
                 <TabsHeader tabName='Orders'/>
 
                 
-                <View className='flex-row w-full mt-6 pb-3 border-b border-zinc-300 justify-between'>
+                <View className='flex-row w-full mt-12 pb-3 border-b border-zinc-300 justify-between'>
                    {orderStage.map((group, index) =>
                   
                               <Pressable onPress={()=>setActiveGroup(group)
@@ -30,7 +31,10 @@ const orders = () => {
                                   >{group}</Text>
                               </Pressable >)}
                 </View>
-                  <ScrollView>
+                  <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  
+                  >
                       {/* orders */}
                   <View className='w-fit border-b  border-zinc-300 pb-4 flex-row gap-4 p-1  mt-8'>
                     {/* img */}

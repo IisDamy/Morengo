@@ -12,11 +12,12 @@ const CustomButton = (
         style,
         textStyle,
         leftIcon,
+        disabled,
         isLoading=false
     }: CustomButtonProps
 ) => {
   return (
-  <TouchableOpacity onPress={onPress} >
+  <TouchableOpacity onPress={onPress} disabled={disabled}>
     {leftIcon}
     <View className={`flex items-center rounded-[10] py-5  p-2 ${style}`}
        

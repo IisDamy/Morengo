@@ -13,8 +13,8 @@ const cart = () => {
   
     <SafeAreaView className='h-full w-full flex'>
       <ScrollView className=' '>
-        <View className='flex justify-center px-6 items-center'>
-           <View className='w-full flex-row mt-2 px-2 justify-between'>
+        <View className='flex bg-white justify-center px-6 items-center'>
+           <View className='w-full pt-4 items-center flex-row mt-2 px-2 justify-between'>
               <Pressable onPress={()=> router.back()}>
                 {/* view should show slight tint color when clicked, pressable effect */}
             <View className='p-2 rounded-full border'>

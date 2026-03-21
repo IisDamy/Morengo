@@ -8,28 +8,36 @@ import { createUser } from '@/lib/appwrite'
 import { CustomDropdown } from '@/components'
 import PasswordStrengthMeter from '@/components/PasswordStrengthMeterBar'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import CustomRadio from '@/components/CustomRadio'
+
 
 export default function SignUp() {
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [form, setForm] = useState({email:'', password:'', name:'', number:'', institution:''});
+    const [form, setForm] = useState({email:'', password:'', name:'', number:'', institution:'', isStudent:true});
     const [strengthScore, setStrengthScore] = useState(-1)
-
+    const [isChecked, setChecked] = useState(false);
     const isPasswordValid = strengthScore >=2
+    const [isDisabled, setIsDisabled] = useState(true)
+    const [isInrerestedPartner, setIsInterestedPartner] = useState(false)
+
+    useEffect(()=>{
+         if(!form.name || !form.email || !form.password || !form.number ) setIsDisabled(true)
+        else setIsDisabled(false)
+    
+    },
+[form])
 
 
     const submit = async ()=>{
-        const { name, email, password, institution, number } = form;
-
-
-          try {
-        if(!form.name || !form.email || !form.password) throw Error('Please enter valid email address and password')
+        const { name, email, password, institution, number, isStudent } = form;
+                if(!form.name || !form.email || !form.password) throw Error('Please enter valid email address and password')
         if(!form.number || !form.institution) throw Error('Please fill all the fields')
          if(!isPasswordValid) throw Error("Please choose a stronger password.");
         if(form.number.length != 11) throw Error('Number must be 11 digits')
-     
         setIsSubmitting(true);
-        await createUser({ email,  password,  name, institution, number });
 
+          try {
+            await createUser({  email, password, name, institution, number,  isStudent})
             router.replace('/(tabs)');
         } catch(error: any) {
             Alert.alert('Error', error.message);
@@ -37,10 +45,7 @@ export default function SignUp() {
             setIsSubmitting(false);
         }
     }
-    
-    const oAuthSubmit = async ()=>{
 
-    }
 
     return (
       <View className='gap-10 bg-white pb-20 rounded-lg p-5 mt-5'>
@@ -57,6 +62,7 @@ export default function SignUp() {
                                       }}
                     >sign up</Text>
                 </View>
+                
         <View className='flex-row items-center mt-4 mb-0'>
             <Text className='text-left tracking-wide'>Already have an account? <Link href={'./sign-in'} className='text-green-300'>
                 Sign In
@@ -109,16 +115,38 @@ export default function SignUp() {
                 maxLength={11}
                 secureTextEntry={false}
                 />
+                 
+        <CustomRadio value={form.isStudent} 
+        onValueChange={(value)=>{setForm({...form, isStudent:value})}}
+         optiona='Yes'
+        optionb='No'
+        type='student'
+        title='Are you a student?'
+                />
+               
+    
+    {form.isStudent && <CustomDropdown value={form.institution} onValueChange={(value) => setForm({...form, institution:value})}/>}
 
-    <CustomDropdown value={form.institution} onValueChange={(value) => setForm({...form, institution:value})}/>
-
+        <CustomRadio value={isInrerestedPartner} 
+        onValueChange={(value)=>{setIsInterestedPartner(value)}}
+        optiona='As a customer'
+        optionb='As a seller(entrepreneur)'
+        type='role'
+        title='How do you primarily intend to use Morengo?'
+                    />
        <CustomButton
        title="Create Account"
        onPress={submit} 
          style={`bg-[#57a886] mt-6`}
+         isLoading={isSubmitting}
+         disabled={isDisabled}
+         
        />
-       
-  
+    <View className='mt-6'>
+<Text className=' mb-3  font-light  leading-5 tracking-wide mx-auto'>Curious about Morengo? </Text>   
+  <Link href={'/'} className='text-blue-400 text-center font-light text-sm leading-5 tracking-wide'> Learn more about how our platform works whether you're looking to sell or to shop.</Link>
+    </View>
+
       </View>
     )
   

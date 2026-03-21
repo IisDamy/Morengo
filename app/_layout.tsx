@@ -43,18 +43,18 @@ export default Sentry.wrap(function RootLayout() {
  useEffect(() => {
     // splash screen should not be hidden and should show before app loads
     if (error) throw error;
-    if (fontsLoaded) SplashScreen.hideAsync();
+    SplashScreen.preventAutoHideAsync()
     
   }, [fontsLoaded, error]);
 
-  useEffect(()=>{
+  useEffect(()=>{   
     fetchAuthenticatedUser()
     
   },[])
 
 
 
-  if(isLoading || !fontsLoaded) return (<SplashScreen2/>);
+  if(!isLoading && fontsLoaded) SplashScreen.hideAsync();
  
 
   return (

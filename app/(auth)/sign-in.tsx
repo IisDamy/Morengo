@@ -1,7 +1,7 @@
 import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import { color } from "@/constants";
-import { SignIn as EmailSignIn, OAuthSignIn, recoverPassword } from "@/lib/appwrite";
+import { SignIn as EmailSignIn, getCurrentUser, OAuthSignIn, recoverPassword } from "@/lib/appwrite";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import useAuthStore from '@/store/auth.store'
@@ -11,10 +11,11 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
+import { refreshAuthStore } from "@/lib/useAppwrite";
 
 // bg will be decorated beautifully with probalbly orange color
 export default function SignIn() {
-      const { isAuthenticated, user } = useAuthStore();
+      const { isAuthenticated, fetchAuthenticatedUser } = useAuthStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmittingGoogle, setIsSubmittingGoogle] = useState(false)
 
@@ -25,10 +26,10 @@ export default function SignIn() {
       Alert.alert("Error", "Please enter valid email address and password");
     setIsSubmitting(true);
     try {
-        
-      await EmailSignIn({ email: form.email, password: form.password });
-      console.log(isAuthenticated)
+       
+       await EmailSignIn({ email: form.email, password: form.password });
       Alert.alert("Success", "You have signed in successfully");
+      
       router.replace("/(tabs)");
     } catch (error: any) {
       Alert.alert(
@@ -43,9 +44,12 @@ export default function SignIn() {
   const handleOAuthSignIn = async () => {
     setIsSubmittingGoogle(true);
     try {
-      await OAuthSignIn();
+     const result = await OAuthSignIn();
+       if(result){
+        fetchAuthenticatedUser()
+      }
+      else throw new Error()
      
-      router.replace("/(tabs)");
     } catch (error: any) {
    
       Alert.alert(
@@ -63,7 +67,7 @@ export default function SignIn() {
       <View className="absolute top-[-320]  w-screen ">
         {/* obviously cha */}
         <Text
-          className="text-white text-3xl text-center"
+          className=" text-3xl text-center"
           style={{
             fontFamily: "Crispy",
             color: color.morange,
@@ -88,6 +92,8 @@ export default function SignIn() {
 
         /> */}
       <View className="gap-10 flex pt-10">
+        <TouchableOpacity onPress={refreshAuthStore}>
+        </TouchableOpacity>
         <View>
           <CustomInput
             placeholder="Enter your email"
