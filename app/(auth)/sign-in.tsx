@@ -11,7 +11,7 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-import { refreshAuthStore } from "@/lib/useAppwrite";
+
 
 // bg will be decorated beautifully with probalbly orange color
 export default function SignIn() {
@@ -92,8 +92,7 @@ export default function SignIn() {
 
         /> */}
       <View className="gap-10 flex pt-10">
-        <TouchableOpacity onPress={refreshAuthStore}>
-        </TouchableOpacity>
+        {/* maybe welcome to morengo here, or get started with morengo */}
         <View>
           <CustomInput
             placeholder="Enter your email"

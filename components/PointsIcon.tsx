@@ -1,4 +1,4 @@
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import React, { useEffect, useRef } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { color } from '@/constants';
@@ -67,7 +67,7 @@ const PointsIcon: React.FC<PointsIconProps> = ({ points = 0 }) => {
   // Animated styles
   const fillerStyle = useAnimatedStyle(() => ({
     height: fillerHeight.value,
-    backgroundColor: color.morange,
+    backgroundColor: '#14a54a',
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -87,11 +87,12 @@ const PointsIcon: React.FC<PointsIconProps> = ({ points = 0 }) => {
     color: iconColor.value,
   }));
 
-
+const [pointsVisible, setPointsVisible] = React.useState(false);
   
 
   return (
-    <TouchableOpacity>
+    <>
+    <TouchableOpacity onPress={()=>setPointsVisible((prev) => !prev)} >
       <Animated.View
         className="border overflow-hidden rounded-full flex items-center justify-center w-6 h-6"
         style={parentStyle}
@@ -108,6 +109,15 @@ const PointsIcon: React.FC<PointsIconProps> = ({ points = 0 }) => {
         />
       </Animated.View>
     </TouchableOpacity>
+
+        {/* add smooth transition */}
+      <Text className='absolute text-xs  text-white rounded-[5] right-[74]  p-2 bg-zinc-700'
+        style={{opacity: pointsVisible ? 0.75 : 0,}}
+      >
+        points: {clampedPoints}
+      </Text>
+  
+    </>
   );
 };
 

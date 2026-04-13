@@ -67,9 +67,9 @@ const ResetPassword = () => {
   return (
     <View
       className="gap-8 px-6 items-center h-full justify-center"
-      style={{ backgroundColor: color.morange }}
+
     >
-      <Text className="mb-4 font-bold text-xl">Reset your password</Text>
+      <Text className="mb-4 font-bold  text-2xl">Reset your password</Text>
     <View className="items-center">
        <CustomInput
         value={email}
@@ -85,9 +85,9 @@ const ResetPassword = () => {
         title={
           cooldown > 0
             ? `Try again in ${cooldown}s`
-            : "Click to reset password"
+            : "Reset Password"
         }
-        style={"bg-blue-300"}
+        style={"bg-blue-300 p-4"}
       />
     </View>
   );

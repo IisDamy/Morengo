@@ -6,29 +6,33 @@ import {images} from '../../constants/index'
 import Sentry from '@sentry/react-native'
 import useAuthStore from '@/store/auth.store'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { refreshAuthStore, clearAuthStore } from '@/lib/useAppwrite'
+
 
 
 const AuthLayout = () => {
   // const {isAuthenticated} = useAuthStore()
   const { isAuthenticated, user, isLoading, fetchAuthenticatedUser } = useAuthStore();
 
-  useEffect(() => {   
-  fetchAuthenticatedUser()
+  useEffect(() => {
+
+  const refresh = async () => {
+ if (!isAuthenticated){
+    await fetchAuthenticatedUser()
+ }} 
+refresh()
   },[])
 
 
   if (user?.role!=='Customer' && isAuthenticated) return <Redirect href='/(screens)/Dashboard' />
-
   if(isAuthenticated && !isLoading) return <Redirect href='/(tabs)' />
   
   return (
  
     <KeyboardAvoidingView behavior={ 'padding' } style={{flex:1}} className='bg-white'>
         <ScrollView keyboardShouldPersistTaps='handled' className=''>
-        <View style={{height: Dimensions.get('screen').height/2.25}} className='bg-white'>
-          
-            <Image source={images.loginGraphic} />
+        <View style={{height: Dimensions.get('screen').height/2.25}} className='bg-white'>   
+            <ImageBackground source={images.loginGraphic} className='size-full rounded-b-lg'/>
+            <Image source={images.logo} className="self-center size-48 absolute -bottom-16 z-10" />
         </View>
         <Slot />
     </ScrollView> 

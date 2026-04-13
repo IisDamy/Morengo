@@ -1,4 +1,4 @@
-import { Address, CreateUserParams, GetMenuParams, SignInParams} from "@/types";
+import { Address, CreateUserParams, GetItemParams, GetMenuParams, SignInParams, Vendor} from "@/types";
 import { makeRedirectUri } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from 'expo-linking';
@@ -13,7 +13,7 @@ import {
   TablesDB,
 } from "react-native-appwrite";
 import { User } from "@/types";
-import { refreshAuthStore, clearAuthStore } from "./useAppwrite";
+
 
 
 // # dont forget to delete this and add complete eas build for secrets before launch
@@ -90,7 +90,8 @@ export const createUser = async ({
         name,
         institution,
         number,
-        isStudent
+        isStudent,
+        points:0
       }
     
     })
@@ -108,7 +109,7 @@ export const SignIn = async ({ email, password }: SignInParams) => {
       email,
       password,
     });
-    //  await refreshAuthStore(); 
+     await refreshAuthStore(); 
   } catch (e) {
     throw new Error(e as string);
   }
@@ -141,9 +142,10 @@ const session = await account.createSession({
     userId,
     secret
 });
- await refreshAuthStore(); 
+
 if (!session) throw new Error('Failed to create session')
 return true
+await refreshAuthStore(); 
   } catch (e) {
     console.error(e)
     return false
@@ -173,7 +175,12 @@ export const getCurrentUser = async () => {
     const currentUser = await tablesDB.listRows({
       databaseId: appwriteConfig.databaseId,
       tableId: appwriteConfig.userCollectionId,
-      queries: [Query.equal("accountId", currentAccount.$id)],
+      queries: [
+        Query.equal("accountId", currentAccount.$id),
+
+      
+      ]
+        
     });
 
     if (!currentAccount) throw Error;
@@ -184,23 +191,6 @@ export const getCurrentUser = async () => {
 };
 
 
-
-// call this function periodically to refresh OAuth token
-// call when user visits app
-// export const OAuthRefreshToken = async () => {
-//   try {
-//     let session = await account.getSession({ sessionId: "current" });
-//     //  don't know if this actually updates at expiry
-//     if (
-//       session?.providerAccessTokenExpiry &&
-//       new Date(session.providerAccessTokenExpiry) === new Date()
-//     ) {
-//       const newSession = await account.updateSession({ sessionId: "current" });
-//     }
-//   } catch (e) {
-//     throw new Error(e as string);
-//   }
-// };
 
 export const getMenu = async ({ category, query }: GetMenuParams) => {
   try {
@@ -242,33 +232,6 @@ export const getOrders = async ({ category, query }: GetMenuParams) => {
     throw new Error(e as string);
   }
 };
-
-// addresses should be also saved in local storage
-
-// export const createOrder = async ({
-//   itemId,
-//   quantity,
-//   addressId,
-// }: {
-//   itemId: string;
-//   quantity: number;
-//   addressId: string;
-// }) => {
-//   try {
-//     const order = await databases.createDocument(
-//       appwriteConfig.databaseId,
-//       appwriteConfig.orderCollectionId,
-//       {
-//         itemId,
-//         quantity,
-//         addressId,
-//       },
-//     );
-//     return order;
-//   } catch (e) {
-//     throw new Error(e as string);
-//   }
-// };
 
 
 export const recoverPassword = async (email:string)=>{
@@ -335,31 +298,230 @@ export const updateUser = async ({
 };
 
 
+export const getVendors = async ({ category, query }: GetItemParams) => {
+    try {
+        const queries: string[] = [];
+
+        if(category) queries.push(Query.equal('categories', category));
+        if(query) queries.push(Query.search('name', query));
+
+        const vendors = await tablesDB.listRows(
+           { databaseId: appwriteConfig.databaseId,
+            tableId: 'vendors',
+            queries }
+        )
+
+        return vendors.rows;
+    } catch (e) {
+          console.error('getVendors error:', e);
+  return [];
+    }
+}
+
+
+// don't forgrt ownerid
+export const createVendor = async (data:Vendor)=>{
+  try{
+    const res = await tablesDB.createRow({
+      databaseId:appwriteConfig.databaseId,
+      tableId:'vendors',
+      rowId:ID.unique(),
+      data:data
+    })
+    if (res) return true
+  }
+  catch(e){
+    // return false
+    throw new Error(e as string)
+  }
+}
 
 
 
-export const updateUserAddress  = async ({
-  addresses,
-  accountId
-}: {
-  addresses:Address ,
-  accountId:string
-}) => {
+
+
+
+export const updateVendor = async ({
+  name,
+  description,
+  imageUrl,
+  open,
+  closes,
+  coords,
+  verified,
+  ownerId
+
+}:Vendor) => {
+  try{
+
+    const res = await tablesDB.listRows({
+      databaseId:appwriteConfig.databaseId,
+      tableId:'vendors',
+      queries:[Query.equal('ownerId', ownerId)]
+    })
+
+    if (!res.rows.length) {
+  throw new Error('Vendor not found');
+}
+
+const vendor = res.rows[0];
+
+    await tablesDB.updateRow({
+       databaseId:appwriteConfig.databaseId,
+      tableId:'vendors',
+      rowId:vendor.$id,
+      data:{
+        name,
+        description,
+        imageUrl,
+        open,
+        closes,
+        coords,
+        verified
+      }
+    })
+    return true
+  }
+  catch(e){
+     throw new Error('Error encountered while updating your shop')
+   
+   
+    
+  }
+}
+
+
+export const refreshAuthStore = async () => {
   try {
-    // 1️⃣ Update user fields ONLY if provided
-      await tablesDB.updateRow({
-        databaseId: appwriteConfig.databaseId,
-        tableId: "user",
-        rowId: accountId,
-        data: {
-          addresses
-        }
-        
-      });  
-    await refreshAuthStore();                   
-  return true;
-
-  } catch (e: any) {
-    throw new Error(e.message || "Failed to update user");
+    const useAuthStore = (await import('@/store/auth.store')).default;
+    await useAuthStore.getState().fetchAuthenticatedUser();
+    return true
+  } catch (e) {
+    console.error('refreshAuthStore error', e);
+    return false
   }
 };
+
+export const clearAuthStore = async () => {
+  try {
+    const useAuthStore = (await import('@/store/auth.store')).default;
+    useAuthStore.getState().setIsAuthenticated(false);
+    useAuthStore.getState().setUser(null);
+  } catch (e) {
+    console.error('clearAuthStore error', e);
+  }
+};
+
+
+
+// seperate field
+export const getUserAddresses = async (accountId:string) => {
+  try {
+    const res = await tablesDB.listRows({
+      databaseId: appwriteConfig.databaseId,
+      tableId: "addresses",
+      queries: [
+        Query.equal("accountId", accountId)
+      ],
+    });
+
+    return res.rows;
+
+  } catch (e: any) {
+    throw new Error(e.message || "Failed to fetch addresses");
+  }
+};
+
+
+
+
+export const updateUserAddress = async ({
+  selectedName,
+  selectedId,
+  addresses,
+}: {
+  selectedName: string;
+  selectedId: string;
+  addresses: Address[];
+}) => {
+  try {
+    await Promise.all(
+      addresses
+        .filter(addr => addr.accountId === selectedId)
+        .map((addr) => {
+          if (!addr?.$id) {
+            throw new Error('Missing address ID');
+          }
+
+          return tablesDB.updateRow({
+            databaseId: appwriteConfig.databaseId,
+            tableId: 'addresses',
+            rowId: addr.$id,
+            data: {
+              isDefault: addr.name === selectedName,
+            },
+          });
+        })
+    );
+
+    return true;
+  } catch (e: any) {
+    console.error('setDefaultAddress error:', e);
+    throw new Error(e.message || 'Failed to update default address');
+  }
+};
+
+
+
+
+export const createAddress = async ({
+  name,
+  coords,
+  isDefault,
+}: {
+  name: string;
+  coords: number[];
+  isDefault?: boolean;
+  // accountId: string;
+}) => {
+  try {
+    const currentAccount = await account.get();
+
+    await tablesDB.createRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId: "addresses",
+      rowId: ID.unique(),
+      data: {
+        name,
+        coords,
+        isDefault: isDefault ?? false,
+        accountId: currentAccount.$id
+      }
+    });
+
+    return true;
+
+  } catch (e: any) {
+    throw new Error(e.message || "Failed to create address");
+  }
+};
+
+
+export const getAdminId = async () => {
+  try{
+        const res = await tablesDB.listRows({
+      databaseId: appwriteConfig.databaseId,
+      tableId: "user",
+      queries: [
+        Query.equal("role", "Admin")
+      ],
+    });
+
+    return res.rows[0].$id;
+    
+  }
+  catch(e:any){
+    throw new Error(e.message || "Failed to fetch admin");
+  }
+
+}

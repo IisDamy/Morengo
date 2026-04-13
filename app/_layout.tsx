@@ -5,7 +5,7 @@ import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import useAuthStore from "@/store/auth.store";
 import * as SplashScreen from 'expo-splash-screen'
-import SplashScreen2 from "./(screens)/SplashScreen";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 
 
@@ -43,7 +43,7 @@ export default Sentry.wrap(function RootLayout() {
  useEffect(() => {
     // splash screen should not be hidden and should show before app loads
     if (error) throw error;
-    SplashScreen.preventAutoHideAsync()
+    if (fontsLoaded) SplashScreen.hideAsync();
     
   }, [fontsLoaded, error]);
 
@@ -54,11 +54,13 @@ export default Sentry.wrap(function RootLayout() {
 
 
 
-  if(!isLoading && fontsLoaded) SplashScreen.hideAsync();
- 
+  if(isLoading && !fontsLoaded) return null;
 
+ 
   return (
+  <GestureHandlerRootView style={{flex:1}}>
   <Stack screenOptions={{headerShown: false}}/>
+  </GestureHandlerRootView>
    
 
   );

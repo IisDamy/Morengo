@@ -3,12 +3,10 @@ import { Models } from "react-native-appwrite";
 export interface MenuItem extends Models.Document {
     name: string;
     price: number;
-    image_url: string;
-    description: string;
-    calories: number;
-    protein: number;
+    image: string;
     rating: number;
     type: string;
+    vendors:Vendor;
 }
 
 
@@ -17,16 +15,31 @@ export interface Category extends Models.Document {
     description: string;
 }
 
-export interface Address {
+export interface Address extends Models.Document{
   coords:number[] | [];
   name: string;
-  country: string;
-  isDefault?: boolean;
-  type:string;       
+  isDefault?: boolean; 
+  accountId: string;      
   // optional, default could be false
   // add any other fields your table has (e.g., label, lat, lng)
 }
 
+
+
+
+export interface Vendor {
+    name?:string;
+    description?:string;
+    coords?:number[];
+    imageUrl?:string;
+    rating?:number;
+    open?:number;
+    closes?:number;
+    category?:string;
+    ownerId:string;
+    verified?:boolean;
+    menu?:MenuItem[];
+}
 
 export interface User extends Models.Document {
     name?: string | undefined;
@@ -34,16 +47,12 @@ export interface User extends Models.Document {
     avatar?: string;
     role?: 'Admin' | 'DeliveryPerson' | 'Customer' | 'Vendor' | 'Vendor+';
     number?:string | undefined;
-    institution?:string | undefined;
+    institution?:string;
     PhotoUrl?:string;
-    points?:number;
+    points:number;
     accountId?:string;
     isStudent?:boolean;
-    addresses?: Address[];
-
-
 }
-
 
 
 export interface CartCustomization {
@@ -140,9 +149,9 @@ interface SignInParams {
     password: string;
 }
 
-interface GetMenuParams {
-    category: string;
-    query: string;
+interface GetItemParams {
+    category?: string;
+    query?: string;
 }
 
 
@@ -154,6 +163,6 @@ interface ManifestoProps {
 
 interface CustomComponentProps {
     value: string;
-    onValueChange: (value: string) => void;
+    onValueChange: (value: { name: string ,coords: number[] }) => void;
 }
 

@@ -66,7 +66,7 @@ const MenuFavouritePanel = ({seeAll}:MenuFavouritePanelProps) => {
               width: -5,
               height: 4,
             },
-            elevation: 1,
+            elevation: 2,
             shadowOpacity: 0.25,
                  
             }}

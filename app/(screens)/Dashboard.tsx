@@ -18,7 +18,7 @@ import Tabs from 'expo-router';
 import { Manifesto, } from '@/components';
 import useAuthStore from '@/store/auth.store';
 import SignIn from '../(auth)/sign-in';
-import PopupWrapper from '@/components/PopUpWrapper';
+
 // SIGN IN POP UP ON PAGE OPEN if user aint signed in
 
 // can replace touchable opacity with pressable if you want to style pressed effect
@@ -281,10 +281,7 @@ const SmileyAnimatedStyles = useAnimatedStyle(()=>({
       <View className=' w-full  h-64'
      
       >
-        {/* {POP UP SIGN IN} */}
-        {<PopupWrapper >
-          <SignIn />
-        </PopupWrapper>}
+
         <View className='w-full h-full  flex justify-between flex-row'>
               <View className=' bg-white w-[60%]  rounded-2xl'
       style={{
@@ -404,6 +401,7 @@ const SmileyAnimatedStyles = useAnimatedStyle(()=>({
 
       {/* tab */}
       <View className=' w-72 h-20 flex-row absolute flex justify-around items-center bottom-20'>
+        <TouchableOpacity onPress={()=> router.replace('/(tabs)')}>
           <View className='border flex items-center justify-center rounded-full w-14 bg-transparent h-14'
              style={{
               backgroundColor:'#fc73236e',
@@ -419,6 +417,7 @@ const SmileyAnimatedStyles = useAnimatedStyle(()=>({
       
           />
           </View>
+          </TouchableOpacity>
           <TouchableOpacity
               onPress={() => router.push('/(screens)/DashboardAid')}
           >

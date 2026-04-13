@@ -6,9 +6,9 @@ import React,{useState} from 'react'
 
 interface CustomPopUpProps{
 
-message:String,
+message:string,
 title:String,
-trigger:String
+trigger:boolean
 }
 
 const CustomPopUp = ({message, title, trigger}:CustomPopUpProps) => {

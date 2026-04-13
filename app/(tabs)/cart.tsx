@@ -161,10 +161,10 @@ const cart = () => {
 
            <View className='mb-12 mt-4 h-16  flex-row items-center justify-around  rounded-[15] mx-3 w-full '
           style={{
-            backgroundColor:color.morange
+            backgroundColor:color.moregreen
           }}
         >
-          <Text className='text-white font-bold'>Checkout</Text>
+          <Text className='text-white font-bold border-r pr-5 border-white'>Checkout</Text>
           <Text className='text-white font-bold'>$10000</Text>
         </View>
         </View>

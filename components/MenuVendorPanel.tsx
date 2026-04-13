@@ -32,7 +32,7 @@ const MenuVendorPanel = () => {
     const [activeGroup, setActiveGroup] = useState('Recent')
 
   return (
-    <View className='w-[100%]  rounded-[30]  mt-4'>
+    <View className='w-[100%] border-b border-zinc-200 rounded-[30]  mt-4'>
     
         <View className='flex flex-row  justify-between '
           
@@ -75,10 +75,12 @@ const MenuVendorPanel = () => {
                 </View>))}
         </View>
 
-        <TouchableOpacity>
-        <Text className='mt-10 pb-10 
-        text-orange-300 tracking-wider text-sm w-full text-center 
-        font-bold '>
+        <TouchableOpacity className=' mt-16 px-2 mb-24 self-center'>
+        <Text className='  
+         tracking-wider  color-green-300 text-sm text-center 
+        font-bold '
+        
+        >
             See more
         </Text>
         </TouchableOpacity>

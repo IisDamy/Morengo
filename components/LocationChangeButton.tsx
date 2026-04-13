@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Pressable } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
@@ -8,97 +8,115 @@ import Animated, {
   withTiming
 } from "react-native-reanimated";
 import useAuthStore from '@/store/auth.store';
-
-
-    const temporary = [
-        {
-            name:'Home'
-        },
-            {
-            name:'Work'
-        }
-    ]
-
+import { account, getUserAddresses, updateUserAddress } from '@/lib/appwrite';
 
 const LocationChangeButton = () => {
-    const {user} = useAuthStore()
+  const { user } = useAuthStore()
 
-    const [currentLocation, setCurrentLocation] = useState('Home')
-    const [open, toggleOpen] = useState(false)
-    const scale = useSharedValue(0);
-    const opacity = useSharedValue(0);
+  const [userAddresses, setUserAddresses] = useState<any[]>([])
+  const [currentAddress, setcurrentAddress] = useState('Select')
+  const [open, toggleOpen] = useState(false)
 
-        const changeLocation = (loc:string) => {
-        setCurrentLocation(loc)
-     
-        handleToggle();
-    }
+  const scale = useSharedValue(0);
+  const opacity = useSharedValue(0);
 
-    useEffect(()=>{
-      console.log(user?.addresses)
-    },[open])
+  useEffect(() => {
+    const fetchUserAddresses = async () => {
 
-    const handleToggle = () => {
-  const newState = !open;
-  toggleOpen(newState);
+      if (user?.accountId) {
+        const addresses = await getUserAddresses(user.accountId);
+      
+        setUserAddresses(addresses);
+        
+  
+        const defaultAddress = addresses.find((item: any) => item.isDefault);
+        if (defaultAddress) {
+          setcurrentAddress(defaultAddress.name);
+        }
+      }
+    };
+    fetchUserAddresses();
+  }, []);
 
-  scale.value = withTiming(newState ? 1 : 0, { duration: 220 });
-  opacity.value = withTiming(newState ? 1 : 0, { duration: 180 });
-};
+  const changeLocation = async (selectedName:string) => {
+try{
+ console.log(selectedName)
+    const updatedAddresses = userAddresses.map((item) => ({
+      ...item,
+      isDefault: item.name === selectedName?true:false
+    }));
+      const defaultAddress = updatedAddresses.find((item) => item.isDefault);
+    await updateUserAddress({
+    selectedName: selectedName,
+  selectedId: user?.accountId,
+  addresses: [...updatedAddresses]})
+    setUserAddresses(updatedAddresses);
 
-
-    const animatedDropdownStyle = useAnimatedStyle(() => {
-  return {
-    transform: [{ scaleY: scale.value }],
-    opacity: opacity.value
+    setcurrentAddress(selectedName);
+    
+    handleToggle();
+}
+catch(e:any){
+  console.error('Failed to update address:', e.message)
+}
+   
   };
-});
 
+  const handleToggle = () => {
+    const newState = !open;
+    toggleOpen(newState);
+console.log(userAddresses, 'wwwwww')
+    scale.value = withTiming(newState ? 1 : 0, { duration: 220 });
+    opacity.value = withTiming(newState ? 1 : 0, { duration: 180 });
+  };
 
+  const animatedDropdownStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scaleY: scale.value }],
+      opacity: opacity.value
+    };
+  });
 
   return (
-        <>
-            <Pressable onPress={handleToggle} >
-                 <View className="flex flex-row  items-center">
-                  <Ionicons
-                    name="location-outline"
-                    size={16}
-                    color="white"
-                    className="relative"
-                  />
+    <>
+      <Pressable onPress={handleToggle}>
+        <View className="flex flex-row items-center">
+          <Ionicons
+            name="location-outline"
+            size={16}
+            color="white"
+          />
 
-                  <Text className=" text-center ml-[3] text-[13px] text-green-100">
-                    {/* when inputing location name, must not be more than like 6 characters */}
-                    {currentLocation}
-                  </Text>
-                  <MaterialIcons
-                    name={open?"keyboard-arrow-up": "keyboard-arrow-down"}
-                    size={14}
-                    color={"#d4e3d5"}
-                    className="relative top-[2] "
-                  />
-                </View>
-            </Pressable>
+          <Text className="text-center font-bold ml-[3] text-[13px] text-green-100">
+            {currentAddress}
+          </Text>
 
-           {/* supposed to roll down, use ai */}
-           {
-         
-           
-            <Animated.View 
-            style={[animatedDropdownStyle, { transformOrigin: "top" }]}
-            className='absolute border border-t-[0] rounded-b-[5]  px-2 left-[6] pb-1 bg-green-100  top-[22]'>
-                
-                    {temporary.map((item)=>
-                    <Pressable onPress={()=> changeLocation(item.name)}>
-                    <Text className='border-b px-2  py-1 border-zinc-300 text-sm'>{item.name}</Text>
-                    </Pressable>
-                    )}
-                
-                    
-            </Animated.View>
-                    }
-        </>
+          <MaterialIcons
+            name={open ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+            size={15}
+            color={"#DCFCE7"}
+            className="relative top-[2]"
+          />
+        </View>
+      </Pressable>
+
+      <Animated.View
+        style={[animatedDropdownStyle, { transformOrigin: "top" }]}
+        className='absolute border border-t-[0] rounded-b-[5] px-2 left-[6] bg-green-100 top-[22]'
+      >
+        {userAddresses.map((item) => (
+          <Pressable
+            key={item.$id || item.name}
+            onPress={() => changeLocation(item.name)}
+          >
+            <Text className='border-b px-2 py-1 border-white text-sm'>
+              {item.name}
+            </Text>
+          </Pressable>
+        ))}
+      </Animated.View>
+    </>
   )
 }
 
-export default LocationChangeButton
+export default LocationChangeButton;

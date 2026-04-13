@@ -9,11 +9,10 @@ const SearchBar = () => {
   return (
     <View className=" w-full px-2">
        <TextInput
-      backgroundColor={"#f8f8f8ff"}
-      className="h-15 w-full rounded-lg px-4 mt-3 mb-3"
+      className="h-15 w-full rounded-lg px-4 mt-3 mb-3 bg-[#f8f8f8ff]"
       value={searchInput}
       onChangeText={setSearchInput}
-      placeholder={<Image source={images.search} resizeMode="contain" h='5 'w='5 '/>}
+      placeholder={'sEARCH'}
       keyboardAppearance="default"
       />
 

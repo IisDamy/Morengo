@@ -1,5 +1,5 @@
-import { MenuFavouritePanel, MenuVendorPanel, NotificationBell, LocationChangeButton, PointsIcon } from "@/components";
-import { color } from "@/constants";
+import { MenuFavouritePanel, MenuVendorPanel, NotificationBell, LocationChangeButton, PointsIcon} from "@/components";
+import { color, images } from "@/constants";
 import { useTabBarVisibility } from "@/contexts/TabBarVisibilityContext";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -13,12 +13,14 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
+  ImageBackground
  
 } from "react-native";
 import Animated from "react-native-reanimated";
 import { router } from "expo-router";
 import { useEffect } from "react";
-
+import GridAnim from "@/components/BotttomGridMain";
 
 
 export default function Index() {
@@ -56,11 +58,27 @@ export default function Index() {
               backgroundColor: color.moregreen,
             }}
           >
+            
             {/* maybe radial  */}
             <LinearGradient
               className="w-screen absolute bottom-[-10] h-[230] "
               colors={[color.moregreen, color.morange]}
             />
+
+            {/* background imgs */}
+            <View className="items-center flex absolute bottom-[0] h-[200] w-screen ">
+              <ImageBackground source={images.milkshake} tintColor={'white'} resizeMode="cover"  className="w-[300] h-[300] rotate-[-30deg] absolute   z-4" />
+              <ImageBackground source={images.fruit} tintColor={'white'} resizeMode="cover"  className="w-[80] h-[80]  absolute  top-[10] z-4" />
+              <ImageBackground source={images.sodaCup} tintColor={'white'} resizeMode="cover"  className="w-[300] h-[300] rotate-[30deg] absolute   z-4" />
+              <ImageBackground source={images.plate} tintColor={'white'} resizeMode="cover"  className="w-[150] p-0 h-[150] rotate-[90deg] absolute top-10 left-[75]  z-4" />
+              <ImageBackground source={images.vine2} tintColor={'white'} resizeMode="cover"  className="w-[150] h-[150] rotate-[60deg] absolute top-[-50] left-[200]  z-4" 
+                style={{
+                  transform:'rotateY(180deg) rotateZ(60deg)'
+                }}
+              />
+              <ImageBackground source={images.vine2} tintColor={'white'} resizeMode="cover"  className="w-[150] h-[150] absolute top-[-50] right-[200]  z-4" />
+            </View>
+            
             {/* turn this text to image cos we're going to design it */}
             <View
               className="flex flex-col 
@@ -74,7 +92,7 @@ export default function Index() {
                 <View className="mr-2 flex flex-row gap-8 items-center">
 
                   {/* this will be animation like dashboard smiley face, with periodic animation */}
-                  <PointsIcon points={30}/>
+                  <PointsIcon points={20}/>
                  <NotificationBell />
                 </View>
               </View>
@@ -115,7 +133,7 @@ export default function Index() {
             <View className="flex flex-row w-full justify-between">
               <Text className="font-bold tracking-wider">Favourite</Text>
               <TouchableOpacity onPress={() => toggleSeeAll((prev) => !prev)}>
-                <Text className="text-orange-300 tracking-wider text-sm font-bold">
+                <Text className="text-green-300 tracking-wider text-sm font-bold">
                   See more
                 </Text>
               </TouchableOpacity>
@@ -125,10 +143,10 @@ export default function Index() {
             <MenuVendorPanel />
 
             
-            <View className=" h-full mx-4 border-t-[1px] border-orange-200  bg-[#F8F8F8] gap-4 pt-10 items-center"
+            <View className=" h-full  mx-4 pt-10  bg-[#F8F8F8] items-center"
              
             >
-            <Text  className="text-lg  mb-8"
+            {/* <Text  className="text-lg  mb-8"
             style={{ 
                         fontFamily: "Crispy",
                         color: color.morange,
@@ -137,19 +155,17 @@ export default function Index() {
                         textShadowOffset: { width: -0.5, height: 0.5 },
                         textShadowRadius: 0.6,
                       }}
-            >ORDER ANYTHING NOW!!</Text>
-           <View className="flex-row gap-4">
-              <View className="bg-zinc-200 h-[150] rounded-[15] w-[150]"></View>
-              <View className="bg-zinc-200 h-[150] rounded-[15] w-[150]"></View>
-           </View>
-            <View className="flex-row gap-4">
-              <View className="bg-zinc-200 h-[150] rounded-[15] w-[150]"></View>
-              <View className="bg-zinc-200 h-[150] rounded-[15] w-[150]"></View>
-           </View>
-            
+            >ORDER ANYTHING NOW!!</Text> */}
+            {/* <Image className="absolute  rotate-[-20deg] right-[-160] top-[0] w-[350] h-[300]" tintColor={color.morange} source={images.vine1}  resizeMode="contain"/>
+             <Image className="absolute  left-[-160] top-[0] w-[350] h-[300]" tintColor={color.morange} source={images.vine1}  resizeMode="contain"
+            style={{
+              transform:'rotateY(180deg) rotateZ(-20deg)'
+            }}
+             /> */}
+            <GridAnim/>
           </View>
           </View>
-          
+         
         </Animated.ScrollView>
      
       </View>

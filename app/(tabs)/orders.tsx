@@ -9,11 +9,11 @@ import { TabsHeader } from '@/components'
 const orders = () => {
   const [activeGroup, setActiveGroup] = useState('Pending')
   const orderStage = ['Pending','Confirmed', 'Delivered']
-
+  const [openCancelPending, setOpenCancelPending] = useState(false)
   return (
     <SafeAreaView className='h-full w-full items-center'>
       
-        
+        <Pressable onPress={()=> setOpenCancelPending(false)}>
         <View className='h-full w-full bg-white flex px-6 items-center'>
                 <TabsHeader tabName='Orders'/>
 
@@ -21,22 +21,29 @@ const orders = () => {
                 <View className='flex-row w-full mt-12 pb-3 border-b border-zinc-300 justify-between'>
                    {orderStage.map((group, index) =>
                   
-                              <Pressable onPress={()=>setActiveGroup(group)
-                              }>
+
+                      <Pressable onPress={()=>setActiveGroup(group)}>
                                   <Text id={`${index}`} className={` py-3  font-bold`}
                                       style={{
                                           color: activeGroup === group?color.moregreen:'#404a3854',
                                           fontSize:14
                                       }}
                                   >{group}</Text>
-                              </Pressable >)}
+                      </Pressable>
+                                
+                              )}
                 </View>
                   <ScrollView
                   showsVerticalScrollIndicator={false}
                   
                   >
                       {/* orders */}
-                  <View className='w-fit border-b  border-zinc-300 pb-4 flex-row gap-4 p-1  mt-8'>
+                  <Pressable  onPress={() => setOpenCancelPending(false)}
+                              onLongPress={()=> setOpenCancelPending(true)}
+                              delayLongPress={500}
+                              >
+                  <View className='mt-4 w-fit border-b p-1 border-zinc-300'>
+                  <View className=' pb-4 flex-row gap-4 '>
                     {/* img */}
                     <View className='bg-zinc-300 rounded-[10]  h-20 w-20'>
           
@@ -59,7 +66,12 @@ const orders = () => {
                         >$3000</Text>
                     </View>
                   </View>
-
+                         {openCancelPending && 
+                         <Text className='bg-red-500 text-white tracking-wide text-md mb-2 rounded-[5] py-3 text-center font-bold p-2 '>
+                            Cancel
+                          </Text>}
+                  </View>
+                  </Pressable>
 
 
               <View className='w-fit border-b pb-4 border-zinc-300 flex-row gap-4 p-1  mt-4'>
@@ -87,7 +99,7 @@ const orders = () => {
                   </View>
               </ScrollView>
         </View>
-      
+      </Pressable>
     </SafeAreaView>
   )
 }

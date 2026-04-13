@@ -93,7 +93,7 @@ const TabHome  = ({ focused, icon, title, position }: TabBarIconProps) => {
             paddingBottom: 0,
             position: "absolute",
             paddingVertical: "auto",
-            marginBottom: 10,
+            marginBottom:4,
             marginHorizontal: 20,
             shadowColor: "#1a1a1a",
             height: 70,
@@ -102,7 +102,7 @@ const TabHome  = ({ focused, icon, title, position }: TabBarIconProps) => {
               width: 1,
               height: -0.5,
             },
-            elevation: 2,
+            elevation: 1,
             shadowOpacity: 0.25,
           },
         }}
