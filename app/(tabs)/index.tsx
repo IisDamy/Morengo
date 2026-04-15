@@ -140,7 +140,7 @@ export default function Index() {
             </View>
 
             <MenuFavouritePanel seeAll={seeAll} />
-            <MenuVendorPanel />
+            {/* <MenuVendorPanel /> */}
 
             
             <View className=" h-full  mx-4 pt-10  bg-[#F8F8F8] items-center"
@@ -156,12 +156,8 @@ export default function Index() {
                         textShadowRadius: 0.6,
                       }}
             >ORDER ANYTHING NOW!!</Text> */}
-            {/* <Image className="absolute  rotate-[-20deg] right-[-160] top-[0] w-[350] h-[300]" tintColor={color.morange} source={images.vine1}  resizeMode="contain"/>
-             <Image className="absolute  left-[-160] top-[0] w-[350] h-[300]" tintColor={color.morange} source={images.vine1}  resizeMode="contain"
-            style={{
-              transform:'rotateY(180deg) rotateZ(-20deg)'
-            }}
-             /> */}
+   
+   
             <GridAnim/>
           </View>
           </View>

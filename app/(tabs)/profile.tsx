@@ -1,4 +1,4 @@
-import { View, Text,FlatList, Pressable, TouchableOpacity } from 'react-native'
+import { View, Text,FlatList, Pressable, TouchableOpacity, Image } from 'react-native'
 import React,{useState} from 'react'
 import { color } from '@/constants'
 import { NotificationBell, TabsHeader, ToggleButton } from '@/components'
@@ -12,7 +12,7 @@ import useAuthStore from '@/store/auth.store'
 
 
 const Profile = () => {
-  
+  const {user} = useAuthStore()
   const { onScroll } = useTabBarVisibility();
     const [enablePromoNotifs, setEnablePromoNotifs] = useState(true);
     const [enableNotifs, setEnableNotifs] = useState(true);
@@ -42,21 +42,18 @@ const Profile = () => {
 
     >
     <TabsHeader tabName='Profile'/>
-
-       <View className='w-32 h-24 mt-6 mb-6 border rounded-full bg-zinc-300'>
-        {}
-        </View>
+          <Image source={{uri: user?.avatar  }} alt='nope' className='w-32 h-24 mt-6 mb-6 border rounded-full'/>
       <View className=' w-full px-10 flex-row justify-between mb-6 flex items-center'>
         <View className='flex items-center'>
-          <View className='rounded-full w-10 h-10 border'></View>
+          <View className='rounded-full w-10 h-10 bg-black border'></View>
           <Text className='text-sm mt-2'>History</Text>
         </View>
          <View className='flex items-center'>
-          <View className='rounded-full w-10 h-10 border'></View>
+          <View className='rounded-full w-10 h-10 bg-black border'></View>
           <Text className='text-sm mt-2'>Address</Text>
         </View>
         <View className='flex items-center'>
-          <View className='rounded-full w-10 h-10 border'></View>
+          <View className='rounded-full w-10 h-10 border bg-black'></View>
           <Text className='text-sm mt-2'>My Points</Text>
         </View>
         

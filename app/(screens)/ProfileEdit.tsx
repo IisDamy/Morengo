@@ -6,29 +6,40 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import useAuthStore from '@/store/auth.store'
 import { CustomDropdown, CustomInput } from '@/components'
 import { router } from 'expo-router'
-import { updateUser } from '@/lib/appwrite'
-
+import { refreshAuthStore, updateUser, uploadImage } from '@/lib/appwrite'
+import ImagePickerD from '@/components/ImagePicker'
 
 const ProfileEdit = () => {
 
   const {user} = useAuthStore()
   const [focus, toggleFocus] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [image, setImage] = useState<string | null>(user?.avatar || null);
       const [form, setForm] = useState({
       name:user?.name,
       email:user?.email,
       number:user?.number,
-      institution:user?.institution
+      institution:user?.institution,
     })
 
  const handleSave = async () => {
   try{
+     let avatarId = user?.avatar;
+
+    if (image && image !== user?.avatar) {
+      avatarId = await uploadImage(image);
+    }
+
    const result = await updateUser({
       accountId:user?.$id,
       name:form.name, 
       email:form.email, 
       number:form.number, 
-      institution:form.institution})
+      institution:form.institution,
+      avatar:avatarId
+      
+    })
+    await refreshAuthStore()
     if(!result){
       throw new Error('Update failed')
     }
@@ -50,7 +61,7 @@ const ProfileEdit = () => {
         </TouchableOpacity>
       </View>
   
-      <View className='w-[100] border rounded-full h-[100] mb-12 my-2 bg-zinc-300'></View>
+      <ImagePickerD image={image} setImage={(value)=> setImage(value)}/>
     {/* this is mapped through, user info then updates based on id */}
       <View className='bg-white p-4  gap-10 rounded-[10] w-[98%]'
         style={{

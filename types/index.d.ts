@@ -7,6 +7,8 @@ export interface MenuItem extends Models.Document {
     rating: number;
     type: string;
     vendors:Vendor;
+    isAvailable:boolean;
+    
 }
 
 
@@ -27,7 +29,7 @@ export interface Address extends Models.Document{
 
 
 
-export interface Vendor {
+export interface Vendor extends Models.Document{
     name?:string;
     description?:string;
     coords?:number[];
@@ -44,7 +46,7 @@ export interface Vendor {
 export interface User extends Models.Document {
     name?: string | undefined;
     email?: string | undefined;
-    avatar?: string;
+    avatar?: string | undefined;
     role?: 'Admin' | 'DeliveryPerson' | 'Customer' | 'Vendor' | 'Vendor+';
     number?:string | undefined;
     institution?:string;
@@ -55,7 +57,7 @@ export interface User extends Models.Document {
 }
 
 
-export interface CartCustomization {
+export interface ModifierOptions {
     id: string;
     name: string;
     price: number;
@@ -75,15 +77,16 @@ export interface CartItemType {
     price: number;
     image_url: string;
     quantity: number;
-    customizations?: CartCustomization[];
+    modifierOptions?: ModifierOptions[];
+
 }
 
 export interface CartStore {
     items: CartItem[];
     addItem: (item: Omit<CartItem, "quantity">) => void;
-    removeItem: (id: string, customizations: CartCustomization[]) => void;
-    increaseQty: (id: string, customizations: CartCustomization[]) => void;
-    decreaseQty: (id: string, customizations: CartCustomization[]) => void;
+    removeItem: (id: string, customizations: ModifierOptions[]) => void;
+    increaseQty: (id: string, customizations: ModifierOptions[]) => void;
+    decreaseQty: (id: string, customizations: ModifierOptions[]) => void;
     clearCart: () => void;
     getTotalItems: () => number;
     getTotalPrice: () => number;
@@ -150,7 +153,7 @@ interface SignInParams {
 }
 
 interface GetItemParams {
-    category?: string;
+    category?: string | boolean;
     query?: string;
 }
 

@@ -6,7 +6,7 @@ import {images} from '../../constants/index'
 import Sentry from '@sentry/react-native'
 import useAuthStore from '@/store/auth.store'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
+import { refreshAuthStore } from '@/lib/appwrite'
 
 
 const AuthLayout = () => {
@@ -14,12 +14,7 @@ const AuthLayout = () => {
   const { isAuthenticated, user, isLoading, fetchAuthenticatedUser } = useAuthStore();
 
   useEffect(() => {
-
-  const refresh = async () => {
- if (!isAuthenticated){
-    await fetchAuthenticatedUser()
- }} 
-refresh()
+    refreshAuthStore()
   },[])
 
 

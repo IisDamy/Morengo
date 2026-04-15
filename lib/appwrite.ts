@@ -1,4 +1,4 @@
-import { Address, CreateUserParams, GetItemParams, GetMenuParams, SignInParams, Vendor} from "@/types";
+import { Address, CreateUserParams, GetItemParams, MenuItem, SignInParams, Vendor} from "@/types";
 import { makeRedirectUri } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from 'expo-linking';
@@ -8,6 +8,7 @@ import {
   Client,
   Databases,
   ID,
+  Storage,
   OAuthProvider,
   Query,
   TablesDB,
@@ -32,8 +33,8 @@ export const appwriteConfig = {
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT!,
   databaseId: "69736bf7000636aa3743",
+  bucketId:"69dfa5e5000d8cf8677f",
   userCollectionId: "user",
-  tableId: "",
   cartCollectionId: "",
   vendorsCollectionId: "",
   ordersCollectionId: "",
@@ -52,9 +53,7 @@ client
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const tablesDB = new TablesDB(client);
-// if avatars means what i think it means, remove
-const avatars = new Avatars(client);
-
+export const storage = new Storage(client);
 
 
 
@@ -192,25 +191,38 @@ export const getCurrentUser = async () => {
 
 
 
-export const getMenu = async ({ category, query }: GetMenuParams) => {
+export const getMenuItems = async ({ category, query }: GetItemParams) => {
   try {
-    const queries: string[] = [];
+    const queries = [];
 
-    if (category) queries.push(Query.equal("categories", category));
+    queries.push(
+      Query.select([
+        '*',
+        'vendors.name',
+        'vendors.$id'
+      ])
+    )
+
+    if (category) queries.push(Query.equal("isFavourite", category));
     if (query) queries.push(Query.search("name", query));
 
     // change listdocuments
-    const menus = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.menuCollectionId,
+    const menus = await tablesDB.listRows(
+    {  
+      databaseId:appwriteConfig.databaseId,
+      tableId:'menu',
       queries,
+    }
     );
 
-    return menus.documents;
+    return menus.rows;
   } catch (e) {
     throw new Error(e as string);
   }
 };
+
+
+
 
 // update this,i just coppied getmenu, make changes
 export const getOrders = async ({ category, query }: GetMenuParams) => {
@@ -267,13 +279,15 @@ export const updateUser = async ({
   institution,
   number,
   accountId,
-  email
+  email,
+  avatar
 }: {
   name:string | undefined,
   institution:string | undefined,
   number:string | undefined,
   accountId:string | undefined,
-  email:string | undefined
+  email:string | undefined,
+  avatar:string | undefined
 }) => {
   try {
     // 1️⃣ Update user fields ONLY if provided
@@ -525,3 +539,39 @@ export const getAdminId = async () => {
   }
 
 }
+
+
+export const getModifierOptions = async ({query}: {query: string}) => {
+  try{
+    if (query){
+        const res = await tablesDB.listRows({
+      databaseId: appwriteConfig.databaseId,
+      tableId: "modifier-options",
+      queries: [
+       Query.or([
+    Query.equal("vendors", query),
+    Query.isNull("vendors")
+    ]) 
+      ]
+    });
+    return res.rows;
+    }
+    return []
+  } catch (e: any) {
+    throw new Error(e.message || "Failed to fetch modifier options");
+  }
+};
+
+
+export const uploadImage = async (uri: string) => {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+
+  const file = await storage.createFile(
+    appwriteConfig.bucketId,
+    'unique()', // auto id
+    blob
+  );
+
+  return file.$id;
+};

@@ -11,17 +11,20 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-
+import { refreshAuthStore } from "@/lib/appwrite";
 
 // bg will be decorated beautifully with probalbly orange color
 export default function SignIn() {
+
       const { isAuthenticated, fetchAuthenticatedUser } = useAuthStore();
+      
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmittingGoogle, setIsSubmittingGoogle] = useState(false)
 
   const [form, setForm] = useState({ email: "", password: "" });
 
   const submit = async () => {
+    refreshAuthStore()
     if (!form.email || !form.password)
       Alert.alert("Error", "Please enter valid email address and password");
     setIsSubmitting(true);

@@ -34,8 +34,12 @@ const MenuVendorPanel = () => {
   return (
     <View className='w-[100%] border-b border-zinc-200 rounded-[30]  mt-4'>
     
-        <View className='flex flex-row  justify-between '
-          
+        <View className='flex border-b-[3px] border-zinc-100 pb-1  w-screen self-center px-6 flex-row  justify-between '
+           style={{
+                
+              marginTop:4,
+             
+            }}
         >
             {TabGrouping.map((group, index) =>
 
