@@ -100,7 +100,7 @@ console.log(userAddresses, 'wwwwww')
         </View>
       </Pressable>
 
-      <Animated.View
+      {userAddresses.length > 0? <Animated.View
         style={[animatedDropdownStyle, { transformOrigin: "top" }]}
         className='absolute border border-t-[0] rounded-b-[5] px-2 left-[6] bg-green-100 top-[22]'
       >
@@ -113,8 +113,15 @@ console.log(userAddresses, 'wwwwww')
               {item.name}
             </Text>
           </Pressable>
-        ))}
-      </Animated.View>
+        ))
+     
+      }
+      </Animated.View>:
+      
+        <Animated.Text style={[animatedDropdownStyle, { transformOrigin: "top" }]}
+        className='absolute left-[-12]  top-[22]'>
+          {'<'}No saved addresses{'>'}
+          </Animated.Text>}
     </>
   )
 }

@@ -2,23 +2,11 @@
 import { MenuItem, ModifierOptions } from "@/types";
 import React, { useCallback, useEffect } from "react";
 import {
-  Dimensions,
-  Modal,
-  TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  View,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  Image,
-  type ViewStyle,
-  Platform,
+  Dimensions, Modal,TouchableWithoutFeedback, View, TouchableOpacity, Text, TextInput, Image, type ViewStyle,
 } from "react-native";
 
 import Animated, {
   Easing,
-  interpolate,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -29,11 +17,14 @@ import { getModifierOptions } from "@/lib/appwrite";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import CustomButton from "./CustomButton";
+import { useCartStore } from "@/store/cart.auth.store";
+import { buildOrderString } from "@/constants";
+import { formatNaira } from "@/constants";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 
-const SHEET_HEIGHT = SCREEN_HEIGHT * 0.7;
+const SHEET_HEIGHT = SCREEN_HEIGHT * 0.6;
 
 
 
@@ -49,18 +40,26 @@ const CLOSE_SPRING_CONFIG = {
   mass: 0.7,
 };
 
+interface SelectedItem {
+    name: string;
+    price: number;
+    image: string;
+    vendors: any;
+    id: string | null;
+}
 
 interface MenuItemCartAddPopUpProps {
   visible: boolean;
   onClose: () => void;
   sheetStyle?: ViewStyle;
-  selectedItem: MenuItem | null;
+  selectedItem: SelectedItem | null;
 }
 
 interface SelectedModifier {
   $id: string
   name: string
   qty: number
+  price: number
 }
 
 
@@ -70,9 +69,13 @@ const MenuItemCartAddPopUp: React.FC<MenuItemCartAddPopUpProps> = ({
   selectedItem,
   sheetStyle,
 }) => {
+  const {addItem, items} = useCartStore()
+
+  const [qty, setQty] = React.useState(1)
+  const [specialInstructions, toggleSpecialInstructions] = React.useState(false)
   const [openSides, toggleOpenSides] = React.useState(false)
     const [selectedModifiers, setSelectedModifiers] = React.useState<SelectedModifier[]>([])
-    const [modifierOptions, setModifierOptions] = React.useState([])
+    const [modifierOptions, setModifierOptions] = React.useState<ModifierOptions[]>([])
   const translateY = useSharedValue(SHEET_HEIGHT);
 
   const overlayOpacity = useSharedValue(0);
@@ -89,8 +92,11 @@ const MenuItemCartAddPopUp: React.FC<MenuItemCartAddPopUpProps> = ({
     });
   }, [overlayOpacity, translateY, triggerClose]);
 
+
   useEffect(()=>{
     toggleOpenSides(false)
+    toggleSpecialInstructions(false)
+    setQty(1)
     const handleOpen = async () => {
         setSelectedModifiers([]) // reset modifiers when opening a new item
     await handleModifierOptions(selectedItem.vendors?.$id)
@@ -114,7 +120,7 @@ const MenuItemCartAddPopUp: React.FC<MenuItemCartAddPopUpProps> = ({
     }
   }, [visible]); 
 
-
+  
 
   const sheetAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -130,7 +136,7 @@ const MenuItemCartAddPopUp: React.FC<MenuItemCartAddPopUpProps> = ({
 
 
 
-  const handleModifierPress = (option: { $id: string; name: string }) => {
+  const handleModifierPress = (option: { $id: string; name: string, price: number }) => {
     setSelectedModifiers((prev) => {
       const existing = prev.find((m) => m.$id === option.$id)
       if (existing) {
@@ -140,15 +146,17 @@ const MenuItemCartAddPopUp: React.FC<MenuItemCartAddPopUpProps> = ({
         )
       }
       // New modifier — add with qty 1
-      return [...prev, { $id: option.$id, name: option.name, qty: 1 }]
+      return [...prev, { ...option, qty: 1}]
     })
   }
 
   const handleModifierOptions = async (vendorId: string) => {
     try {
       const res = await getModifierOptions({ query: vendorId })
+      const options = res.map((opt) => ({ $id: opt.$id, name: opt.name, price: opt.price}))
       if (!res) throw new Error('No modifier options found for this item')
-      setModifierOptions(res)
+      setModifierOptions(options)
+  
     } catch (e) {
       console.error(e)
     }
@@ -156,13 +164,13 @@ const MenuItemCartAddPopUp: React.FC<MenuItemCartAddPopUpProps> = ({
  
   
     // Builds the display string: "Shawarma + 2 Coke + 1 Bottle Water"
-    const buildOrderString = (): string => {
-      if (!selectedItem) return ''
-      const base = selectedItem.name
-      if (selectedModifiers.length === 0) return base
-      const modifierParts = selectedModifiers.map((m) => `${m.qty} ${m.name}`)
-      return `${base} + ${modifierParts.join(' + ')}`
-    }
+    // const buildOrderString = (): string => {
+    //   if (!selectedItem) return ''
+    //   const base = selectedItem.name
+    //   if (selectedModifiers.length === 0) return base
+    //   const modifierParts = selectedModifiers.map((m) => `${m.qty} ${m.name}`)
+    //   return `${base} + ${modifierParts.join(' + ')}`
+    // }
   
 
   return (
@@ -205,20 +213,20 @@ const MenuItemCartAddPopUp: React.FC<MenuItemCartAddPopUpProps> = ({
           <View className='flex-row w-full border-b border-zinc-100 py-4 gap-8'>
             <Image source={{ uri: selectedItem?.image }} className='w-32 h-28 rounded rounded-3xl' />
             <View className='gap-1'>
-              <Text className='font-bold uppercase w-[185] flex-wrap'>{buildOrderString()}</Text>
+              <Text className='font-bold uppercase w-[185] flex-wrap'>{buildOrderString(selectedItem, selectedModifiers)}</Text>
               <Text className='font-bold text-green-400'>{selectedItem?.vendors?.name}</Text>
-              <Text className='mt-2 font-medium'>Price: ₦{selectedItem?.price}</Text>
+              <Text className='mt-2 font-medium'>Price: {formatNaira(selectedItem?.price)}</Text>
             </View>
           </View>
 
           <View className='flex-row justify-between py-4 items-center border-zinc-100 border-b w-full'>
             <Text>Quantity</Text>
             <View className='py-2 w-[100] items-center justify-around flex-row'>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => setQty(prev => prev > 1?prev - 1: prev)}>
                     <MaterialIcons name='remove-circle' size={24} color={'green'} />
                 </TouchableOpacity>
-              <Text className='font-bold'>1</Text>
-              <TouchableOpacity>
+              <Text className='font-bold'>{qty}</Text>
+              <TouchableOpacity onPress={() => setQty(prev => prev + 1)}>
                 <MaterialIcons name='add-circle' size={24} color={'green'} />
               </TouchableOpacity>
               
@@ -253,13 +261,17 @@ const MenuItemCartAddPopUp: React.FC<MenuItemCartAddPopUpProps> = ({
             )}
           </View>
 
-          <TouchableOpacity className='flex-row gap-2 items-center py-4'>
+          <TouchableOpacity className='flex-row gap-2 items-center py-4' onPress={()=>toggleSpecialInstructions(prev => !prev)}>
             <MaterialIcons name='add-circle' size={24} color={'gold'} />
             <Text>Add special instructions</Text>
           </TouchableOpacity>
-            <TextInput className='bg-white border-zinc-300 h-[50] border rounded-[8] ' multiline={true}/>
+            {specialInstructions && <TextInput className='bg-white border-zinc-300 h-[50] border rounded-[8] ' multiline={true}/>}
 
-          <CustomButton style={'bg-blue-300 mt-12 mb-14'} title='Add to cart' />
+          <CustomButton style={'bg-blue-300 mt-12 mb-14'} title='Add to cart' onPress={()=> {
+           
+            addItem({qty:qty, item:{...selectedItem, modifierOptions:selectedModifiers ?? []}})
+            animateClose()
+        }}/>
 
         </KeyboardAwareScrollView>
               </View>

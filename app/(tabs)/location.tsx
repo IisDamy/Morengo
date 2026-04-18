@@ -81,7 +81,6 @@ const location = () => {
 
     try {
       if (!user?.institution) {
-        console.error('No institution found on user profile')
         await goToUserLocation()
         return
       }

@@ -32,12 +32,7 @@ export default function Index() {
 
   return (
     <SafeAreaView className=" h-fit pb-0 items-center" style={{ flex: 1 }}>
-      <StatusBar
-        barStyle={"dark-content"}
-        backgroundColor={"transparent"}
-       
-        
-      />
+
       <View className="h-screen w-full "
         style={{
           backgroundColor:'#F8F8F8'
@@ -143,9 +138,7 @@ export default function Index() {
             {/* <MenuVendorPanel /> */}
 
             
-            <View className=" h-full  mx-4 pt-10  bg-[#F8F8F8] items-center"
-             
-            >
+       
             {/* <Text  className="text-lg  mb-8"
             style={{ 
                         fontFamily: "Crispy",
@@ -159,7 +152,7 @@ export default function Index() {
    
    
             <GridAnim/>
-          </View>
+            
           </View>
          
         </Animated.ScrollView>

@@ -14,8 +14,18 @@ const AuthLayout = () => {
   const { isAuthenticated, user, isLoading, fetchAuthenticatedUser } = useAuthStore();
 
   useEffect(() => {
-    refreshAuthStore()
-  },[])
+    const initialize = async () =>{
+      try {
+        await refreshAuthStore();
+        await fetchAuthenticatedUser();
+      } catch (error) {
+        console.error('Error initializing auth store:', error);
+        Sentry.captureException(error);
+      }
+    }
+
+    initialize();
+  }, []);
 
 
   if (user?.role!=='Customer' && isAuthenticated) return <Redirect href='/(screens)/Dashboard' />

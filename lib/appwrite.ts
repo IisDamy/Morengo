@@ -1,4 +1,4 @@
-import { Address, CreateUserParams, GetItemParams, MenuItem, SignInParams, Vendor} from "@/types";
+import { Address, CartItemType, CreateUserParams, GetItemParams, MenuItem, SignInParams, Vendor} from "@/types";
 import { makeRedirectUri } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import * as Linking from 'expo-linking';
@@ -74,7 +74,9 @@ export const createUser = async ({
       password,
       name,
     });
+
     if (!newAccount) throw Error;
+
     await SignIn({ email, password });
 
     // let avatarUrl = avatars.getInitialsURL(name);
@@ -225,25 +227,6 @@ export const getMenuItems = async ({ category, query }: GetItemParams) => {
 
 
 // update this,i just coppied getmenu, make changes
-export const getOrders = async ({ category, query }: GetMenuParams) => {
-  try {
-    const queries: string[] = [];
-
-    if (category) queries.push(Query.equal("categories", category));
-    if (query) queries.push(Query.search("name", query));
-
-    // change listdocuments
-    const menus = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.menuCollectionId,
-      queries,
-    );
-
-    return menus.documents;
-  } catch (e) {
-    throw new Error(e as string);
-  }
-};
 
 
 export const recoverPassword = async (email:string)=>{
@@ -574,4 +557,65 @@ export const uploadImage = async (uri: string) => {
   );
 
   return file.$id;
+};
+
+
+
+export const fetchOrders = async (accountId: string): Promise<Order[]> => {
+  const res = await tablesDB.listRows({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.ordersCollectionId,
+    queries: [
+      Query.equal('accountId', accountId),
+      Query.equal('status', 'pending'),
+      Query.orderDesc('createdAt'),
+    ],
+  })
+
+  return res.rows.map((row: any) => ({
+    ...row,
+    items: JSON.parse(row.items),
+  }))
+}
+
+export const deleteOrder = async (rowId: string) => {
+  await tablesDB.deleteRow({
+    databaseId: appwriteConfig.databaseId,
+    tableId: appwriteConfig.ordersCollectionId,
+    rowId,
+  })
+}
+
+
+export const createOrder = async ({
+  accountId,
+  userAddress,
+  totalAmount,
+  items
+}: {
+  accountId: string | undefined;
+  userAddress: string;
+  totalAmount: number;
+  items: any[];
+}) => {
+  try {
+
+
+    const row = await tablesDB.createRow({
+      databaseId: appwriteConfig.databaseId,
+      tableId:'orders',
+      rowId: ID.unique(),
+      data: {
+        accountId,
+        userAddress,
+        totalAmount,
+        status: "pending",
+        items: JSON.stringify(items), // snapshot of cart at time of order
+      },
+    });
+
+    return row;
+  } catch (e: any) {
+    throw new Error(e.message || "Failed to create order");
+  }
 };

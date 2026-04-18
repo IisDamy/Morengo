@@ -1,75 +1,84 @@
-import { ModifierOptions, CartStore } from "@/types";
+import { ModifierOptions, CartStore, CartItemType } from "@/types";
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-function areCustomizationsEqual(
+
+function aremodifierOptionsEqual(
     a: ModifierOptions[] = [],
     b: ModifierOptions[] = []
 ): boolean {
     if (a.length !== b.length) return false;
 
-    const aSorted = [...a].sort((x, y) => x.id.localeCompare(y.id));
-    const bSorted = [...b].sort((x, y) => x.id.localeCompare(y.id));
+    const aSorted = [...a].sort((x, y) => x.$id.localeCompare(y.$id));
+    const bSorted = [...b].sort((x, y) => x.$id.localeCompare(y.$id));
 
-    return aSorted.every((item, idx) => item.id === bSorted[idx].id);
+    return aSorted.every((item, idx) => item.$id === bSorted[idx].$id);
 }
 
-export const useCartStore = create<CartStore>((set, get) => ({
-    items: [],
-
-    addItem: (item) => {
-        const customizations = item.customizations ?? [];
+export const useCartStore = create<CartStore>()(
+    persist(
+        (set, get) => ({
+    items: [], 
+    
+    addItem: ({item, qty}) => {
+        const modifierOptions = item.modifierOptions ?? [];
 
         const existing = get().items.find(
             (i) =>
-                i.id === item.id &&
-                areCustomizationsEqual(i.customizations ?? [], customizations)
+                i.id === item.id 
+            &&
+                aremodifierOptionsEqual(i.modifierOptions ?? [], modifierOptions)
         );
 
         if (existing) {
             set({
                 items: get().items.map((i) =>
                     i.id === item.id &&
-                    areCustomizationsEqual(i.customizations ?? [], customizations)
+                    aremodifierOptionsEqual(i.modifierOptions ?? [], modifierOptions)
                         ? { ...i, quantity: i.quantity + 1 }
                         : i
                 ),
             });
+
+
+
         } else {
             set({
-                items: [...get().items, { ...item, quantity: 1, customizations }],
+                items: [...get().items, { ...item, quantity: qty ?? 1, modifierOptions }],
             });
         }
     },
 
-    removeItem: (id, customizations = []) => {
+    removeItem: (id, modifierOptions = []) => {
         set({
             items: get().items.filter(
                 (i) =>
                     !(
                         i.id === id &&
-                        areCustomizationsEqual(i.customizations ?? [], customizations)
+                        aremodifierOptionsEqual(i.modifierOptions ?? [], modifierOptions)
                     )
             ),
         });
     },
 
-    increaseQty: (id, customizations = []) => {
+    increaseQty: (id, modifierOptions = []) => {
         set({
             items: get().items.map((i) =>
                 i.id === id &&
-                areCustomizationsEqual(i.customizations ?? [], customizations)
+                aremodifierOptionsEqual(i.modifierOptions ?? [], modifierOptions)
                     ? { ...i, quantity: i.quantity + 1 }
                     : i
             ),
         });
     },
 
-    decreaseQty: (id, customizations = []) => {
+    decreaseQty: (id, modifierOptions = []) => {
         set({
             items: get()
                 .items.map((i) =>
                     i.id === id &&
-                    areCustomizationsEqual(i.customizations ?? [], customizations)
+                    aremodifierOptionsEqual(i.modifierOptions ?? [], modifierOptions)
                         ? { ...i, quantity: i.quantity - 1 }
                         : i
                 )
@@ -86,10 +95,15 @@ export const useCartStore = create<CartStore>((set, get) => ({
         get().items.reduce((total, item) => {
             const base = item.price;
             const customPrice =
-                item.customizations?.reduce(
-                    (s: number, c: ModifierOptions) => s + c.price,
+                item.modifierOptions?.reduce(
+                    (s: number, c: ModifierOptions) => s + (c.price * c.qty),
                     0
                 ) ?? 0;
             return total + item.quantity * (base + customPrice);
-        }, 0),
-}));
+        }, 0)
+}),
+    {
+    name: "morengo-cart",
+    storage: createJSONStorage(() => AsyncStorage),
+        }
+    ))

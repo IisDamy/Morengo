@@ -57,28 +57,25 @@ export interface User extends Models.Document {
 }
 
 
-export interface ModifierOptions {
-    id: string;
+export interface ModifierOptions{
     name: string;
     price: number;
-    type: string;
-}
-
-export interface productsProps
-{
-
+    $id: string;
+    qty: number;
+    
+    
 }
 
 
 
-export interface CartItemType {
-    id: string; // menu item id
+
+export interface CartItemType extends Models.Document {
     name: string;
     price: number;
-    image_url: string;
+    image: string;
     quantity: number;
     modifierOptions?: ModifierOptions[];
-
+    vendors:Vendor;
 }
 
 export interface CartStore {

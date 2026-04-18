@@ -137,7 +137,7 @@ const saveUserLocation = async () => {
         ref={inputRef}
         className="bg-zinc-200 border-zinc-400 p-2 text-sm rounded-[5] py-2 border"
         value={newAddress.name}
-        maxLength={10}
+        maxLength={20}
         onChangeText={(text) => setNewAddress(prev => ({ ...prev, name: text }))}
       />
 

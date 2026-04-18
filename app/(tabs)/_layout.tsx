@@ -6,7 +6,7 @@ import { TabBarIconProps } from "@/types";
 import { BottomTabBar } from "@react-navigation/bottom-tabs";
 import { Tabs, Redirect } from "expo-router";
 import React,{useEffect} from "react";
-import { Image, View } from "react-native";
+import { Image, StatusBar, View } from "react-native";
 import Animated from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { color, images } from "../../constants/index";
@@ -78,6 +78,12 @@ const TabHome  = ({ focused, icon, title, position }: TabBarIconProps) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+      <StatusBar
+              barStyle={"dark-content"}
+              backgroundColor={"transparent"}
+             
+              
+            />
       <Tabs
         tabBar={(props) => <AnimatedTabBar {...props} />}
         screenOptions={{

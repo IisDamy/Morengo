@@ -31,7 +31,7 @@ export default function SignUp() {
     const submit = async ()=>{
         const { name, email, password, institution, number, isStudent } = form;
                 if(!form.name || !form.email || !form.password) throw Error('Please enter valid email address and password')
-        if(!form.number || !form.institution) throw Error('Please fill all the fields')
+        if(!form.number ||(form.isStudent && !form.institution)) throw Error('Please fill all the fields')
          if(!isPasswordValid) throw Error("Please choose a stronger password.");
         if(form.number.length != 11) throw Error('Number must be 11 digits')
         setIsSubmitting(true);
@@ -41,7 +41,7 @@ export default function SignUp() {
             router.replace('/(tabs)');
         } catch(error: any) {
             Alert.alert('Error', error.message);
-        } finally {
+        } finally { 
             setIsSubmitting(false);
         }
     }

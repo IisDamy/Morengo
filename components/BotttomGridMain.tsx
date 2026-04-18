@@ -7,10 +7,10 @@ import Animated, {
   withTiming,
   withDelay
 } from "react-native-reanimated";
-
+import { color } from "@/constants";
 const SMALL = 10;
 const LARGE = 300;
-const DEFAULT = 150;
+const DEFAULT = 160;
 const RADIUS = 15;
 const FULL_RADIUS = 999;
 
@@ -68,44 +68,31 @@ export default function GridAnim() {
 // image3 too sharp, replace latter
 
   return (
-    <View className="mt-10 p-2 gap-2">
+    <View className=" gap-2">
       <View className="flex-row gap-2">
         
         <Pressable
           onPressIn={() => (active.value = 1)}
-          onPressOut={() => (active.value = null)}
-        >
-          <Animated.View style={box1} className={'overflow-hidden'} >
-            
+          onPressOut={() => (active.value = null)}>
+          <Animated.View style={box1} className={'overflow-hidden '}>  
             <ImageBackground className="w-[300] absolute h-[300]" source={images.customdelivery}/>
-            <View className="w-[200] border border-green-300 h-[200] rounded-full top-[-90] opacity-[95%] relative right-[-180] bg-orange-500 "/>
-            <Text className="z-2 w-[300] text-right p-3 absolute text-white top-0"
-             style={styles.textPop}
-             >ORDER ANYTHING, 
-             {"\n"}
-             ANYWHERE
-             {"\n"}
-             FROM ANYONE,
-            {"\n"}
-            Just say it
+            <Text className="z-2 text-center w-[100] mx-auto my-auto text-white "
+             style={styles.textPop}>
+             make a CUSTOM ORDER
              </Text>
           </Animated.View>
-
         </Pressable>
         
 
 
         <Pressable
           onPressIn={() => (active.value = 2)}
-          onPressOut={() => (active.value = null)}
-          
-        >
+          onPressOut={() => (active.value = null)}>
           <Animated.View style={box2} className="overflow-hidden " >
             <ImageBackground  className="w-[300] right-0 absolute h-[300]" source={images.businesslady}/>
-            <View className="w-[100] h-[100]  absolute top-0 right-0 bg-orange-500 "/>
-                <Text className="z-2 w-[150] text-left right-[50] absolute p-3 text-white top-["
-             style={styles.textPop}
-             >Indulge in local delicacies
+            <Text className="z-2 text-center w-[100] my-auto mx-auto text-white "
+             style={styles.textPop}>
+              Create a vendor
              </Text>
           </Animated.View>
         </Pressable>
@@ -114,13 +101,12 @@ export default function GridAnim() {
       <View className="flex-row gap-2">
         <Pressable
           onPressIn={() => (active.value = 3)}
-          onPressOut={() => (active.value = null)}
-        >
-          <Animated.View style={box3} className="bg-zinc-200 overflow-hidden items-center" >
+          onPressOut={() => (active.value = null)}>
+          <Animated.View style={box3} className="bg-zinc-200 overflow-hidden" >
             <ImageBackground className="w-[300] left-0 absolute bottom-[0] h-[300]" source={images.womaneatschicken}/>
-             <Text className="z-2 h-[300]  rotate-90  top-0 absolute p-3 text-white "
-             style={styles.textPop}
-             >Indulge in local delicacies
+            <Text className="z-2 text-center w-[100] mx-auto my-auto text-white "
+             style={styles.textPop}>
+              become a rider
              </Text>
           </Animated.View>
         </Pressable>
@@ -131,6 +117,10 @@ export default function GridAnim() {
         >
           <Animated.View style={box4} className="bg-zinc-200 overflow-hidden" >
             <ImageBackground className="w-[300] right-0 absolute bottom-[0] h-[300]" source={images.womaneatschicken}/>
+            <Text className="z-2 text-center w-[100] mx-auto my-auto text-white "
+             style={styles.textPop}>
+              CUSTOM ORDER
+             </Text>
           </Animated.View>
         </Pressable>
       </View>
@@ -143,10 +133,12 @@ export default function GridAnim() {
 
 const styles = StyleSheet.create({
   textPop: {
+    fontSize: 16,
     fontFamily: "Crispy",
-    color: "#FF6B35", // Replace with your actual morange color value
+    lineHeight: 20,
+    color: color.morange, // Replace with your actual morange color value
     letterSpacing: 0,
-    textShadowColor: "#71717a", // zinc color
+    textShadowColor: "#0e0e11", // zinc color
     textShadowOffset: { width: -0.5, height: 0.5 },
     textShadowRadius: 0.6,
   },

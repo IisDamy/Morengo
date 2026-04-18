@@ -4,24 +4,20 @@ import { getMenuItems } from '@/lib/appwrite'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import MenuItemCartAddPopUp from './MenuItemCartAddPopUp'
 import { getModifierOptions } from '@/lib/appwrite'
-
+import { formatNaira } from '@/constants'
 
 interface MenuFavouritePanelProps {
   seeAll: boolean
 }
 
 // Tracks each selected modifier and its quantity
-interface SelectedModifier {
-  $id: string
-  name: string
-  qty: number
-}
+
 
 const MenuFavouritePanel = ({ seeAll }: MenuFavouritePanelProps) => {
 
   const [menuItems, setMenuItems] = React.useState([])
   const [openItemCartAdd, setOpenItemCartAdd] = React.useState(false)
-  const [selectedItem, setSelectedItem] = React.useState(null)
+  const [selectedItem, setSelectedItem] = React.useState({name:'', price: 0, image:'', vendors:[], id:null})
 
 
 
@@ -29,6 +25,7 @@ const MenuFavouritePanel = ({ seeAll }: MenuFavouritePanelProps) => {
     const fetchMenuItems = async () => {
       try {
         const res = await getMenuItems({ category: true })
+        console.log(res)
         if (!res) throw new Error('No menu item exists currently')
         setMenuItems(res)
       } catch (e) {
@@ -41,7 +38,9 @@ const MenuFavouritePanel = ({ seeAll }: MenuFavouritePanelProps) => {
 
 
   const handleSelectItem = async (item) => {
-    setSelectedItem(item)
+    const newVedors = item.vendor.map((vendor:any) => ({ name: vendor.name, $id: vendor.$id}))
+    
+    setSelectedItem({name: item.name, price: item.price, image: item.image, vendors: newVedors, id: item.$id})
     setOpenItemCartAdd(true)
   }
 
@@ -73,7 +72,7 @@ const MenuFavouritePanel = ({ seeAll }: MenuFavouritePanelProps) => {
                 <TouchableOpacity>
                   <Text className='text-sm mt-1 font-bold text-green-400 w-[100]'>{item.vendors?.name}</Text>
                 </TouchableOpacity>
-                <Text className='text-sm mt-1 text-green-400'>₦{item.price}</Text>
+                <Text className='text-sm mt-1 text-green-400'>{formatNaira(item.price)}</Text>
               </View>
 
               <View>
@@ -94,7 +93,7 @@ const MenuFavouritePanel = ({ seeAll }: MenuFavouritePanelProps) => {
 
       <MenuItemCartAddPopUp 
       visible={openItemCartAdd} 
-      onClose={() => setOpenItemCartAdd(false)} 
+      onClose={() => setOpenItemCartAdd(false)}
       selectedItem={selectedItem} 
       />
        
