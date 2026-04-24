@@ -1,0 +1,17 @@
+Refactor and enhance various components and functionalities
+
+- Removed unnecessary StatusBar component from Index screen.
+- Cleaned up console error logging in location handling.
+- Integrated order fetching functionality in orders screen.
+- Increased maxLength for address input in AddLocation component.
+- Adjusted layout and text properties in BottomGridMain component.
+- Improved address selection handling in LocationChangeButton component.
+- Updated MenuFavouritePanel to format prices and handle item selection more effectively.
+- Enhanced MenuItemCartAddPopUp to manage item quantities and modifiers.
+- Refined NotificationBell component styling.
+- Modified TabsHeader for better alignment and styling.
+- Added utility functions for order string building and currency formatting in constants.
+- Implemented order fetching and creation functions in appwrite library.
+- Updated package dependencies for async storage.
+- Enhanced cart store functionality to handle item quantities and modifiers.
+- Updated types to reflect changes in modifier options and cart item structure.

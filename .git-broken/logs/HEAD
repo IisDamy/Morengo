@@ -1,0 +1,10 @@
+0000000000000000000000000000000000000000 43f395ec4c2374d3ec987aa44a5730d8bd3d8111 Damy <Owoadedamilola8@gmail.com> 1766313671 +0100	commit (initial): Initial commit
+43f395ec4c2374d3ec987aa44a5730d8bd3d8111 30290eaaffe44e8fbf7e4fcc2bd68c4c458e2019 Damy <Owoadedamilola8@gmail.com> 1773017931 +0100	commit: auth initialization
+30290eaaffe44e8fbf7e4fcc2bd68c4c458e2019 75190680db35deaccfdd717413a6f5018a2d366b Damy <Owoadedamilola8@gmail.com> 1773018314 +0100	commit: Add .env to .gitignore
+75190680db35deaccfdd717413a6f5018a2d366b 4cde2a55d7d7f4ecf9ca3e17f2917ac4a0262b49 Damy <Owoadedamilola8@gmail.com> 1773019310 +0100	commit: Remove .env from tracking
+4cde2a55d7d7f4ecf9ca3e17f2917ac4a0262b49 30385f29ad387815a34049f66f44b03f55f1ba43 Damy <Owoadedamilola8@gmail.com> 1773156243 +0100	commit: Enhance user profile management and password recovery features
+30385f29ad387815a34049f66f44b03f55f1ba43 ba9504d9885c3fa237b2844abc2c92d29752f5c7 Damy <Owoadedamilola8@gmail.com> 1773949307 +0100	commit: Remove app.config.ts file to streamline configuration management
+ba9504d9885c3fa237b2844abc2c92d29752f5c7 7346da5aebf5c0e4b6738c7ac40800ba8f289be9 Damy <Owoadedamilola8@gmail.com> 1774067261 +0100	commit: feat: update TabsHeader styling for better alignment and spacing
+7346da5aebf5c0e4b6738c7ac40800ba8f289be9 4ade378a3fa94374380bd3ed41eede6e8af6722e Damy <Owoadedamilola8@gmail.com> 1776098034 +0100	commit: feat: update TabsHeader styling for better alignment and spacing
+4ade378a3fa94374380bd3ed41eede6e8af6722e edba2cf978033eaf737a990e252a8a57a7282651 Damy <Owoadedamilola8@gmail.com> 1776268332 +0100	commit: feat: add cart store for managing cart items and their quantities
+edba2cf978033eaf737a990e252a8a57a7282651 21ab5f97c08df56dc6f59e05aff65c04385635bc Damy <Owoadedamilola8@gmail.com> 1776546037 +0100	commit: Refactor and enhance various components and functionalities

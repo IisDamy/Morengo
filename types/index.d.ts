@@ -1,0 +1,183 @@
+import { Models } from "react-native-appwrite";
+
+export interface MenuItem extends Models.Document {
+    name: string;
+    price: number;
+    image: string;
+    rating: number;
+    type: string;
+    vendors:Vendor;
+    isAvailable:boolean;
+    
+}
+
+
+export interface Category extends Models.Document {
+    name: string;
+    description: string;
+}
+
+export interface Address extends Models.Document{
+  coords:number[] | [];
+  name: string;
+  isDefault?: boolean; 
+  accountId: string;      
+  // optional, default could be false
+  // add any other fields your table has (e.g., label, lat, lng)
+}
+
+
+
+
+export interface Vendor extends Models.Document{
+    name?:string;
+    description?:string;
+    coords?:number[];
+    imageUrl?:string;
+    rating?:number;
+    open?:number;
+    closes?:number;
+    category?:string;
+    ownerId:string;
+    verified?:boolean;
+    menu?:MenuItem[];
+}
+
+export interface User extends Models.Document {
+    name?: string | undefined;
+    email?: string | undefined;
+    avatar?: string | undefined;
+    role?: 'Admin' | 'DeliveryPerson' | 'Customer' | 'Vendor' | 'Vendor+';
+    number?:string | undefined;
+    institution?:string;
+    PhotoUrl?:string;
+    points:number;
+    accountId?:string;
+    isStudent?:boolean;
+}
+
+
+export interface ModifierOptions{
+    name: string;
+    price: number;
+    $id: string;
+    qty: number;
+    
+    
+}
+
+
+
+
+export interface CartItemType extends Models.Document {
+    name: string;
+    price: number;
+    image: string;
+    quantity: number;
+    modifierOptions?: ModifierOptions[];
+    vendors:Vendor;
+}
+
+export interface CartStore {
+    items: CartItem[];
+    addItem: (item: Omit<CartItem, "quantity">) => void;
+    removeItem: (id: string, customizations: ModifierOptions[]) => void;
+    increaseQty: (id: string, customizations: ModifierOptions[]) => void;
+    decreaseQty: (id: string, customizations: ModifierOptions[]) => void;
+    clearCart: () => void;
+    getTotalItems: () => number;
+    getTotalPrice: () => number;
+}
+
+interface TabBarIconProps {
+    focused: boolean;
+    icon: ImageSourcePropType;
+    title: string;
+    position:number | null
+}
+
+interface PaymentInfoStripeProps {
+    label: string;
+    value: string;
+    labelStyle?: string;
+    valueStyle?: string;
+}
+
+interface CustomButtonProps {
+    onPress?: () => void;
+    title?: string;
+    style?: React.CSSProperties | string;
+    leftIcon?: React.ReactNode;
+    textStyle?: string;
+    isLoading?: boolean;
+    disabled?:boolean;
+}
+
+interface CustomHeaderProps {
+    title?: string;
+}
+
+interface CustomInputProps {
+    placeholder?: string;
+    maxLength?:number | undefined;
+    value?: string;
+    onChangeText?: (text: string) => void;
+    label: string;
+    secureTextEntry?: boolean;
+    keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
+    autoFocus?:false,
+    style?:string
+}
+
+interface ProfileFieldProps {
+    label: string;
+    value: string;
+    icon: ImageSourcePropType;
+}
+
+interface CreateUserParams {
+    email: string;
+    password: string;
+    name: string;
+    institution:string;
+    number:string;
+    isStudent:boolean;
+}
+
+interface SignInParams {
+    email: string;
+    password: string;
+}
+
+interface GetItemParams {
+    vendors?: string;
+    query?: string;
+    isFavourite?: boolean;
+}
+
+interface GetVendorParams {
+    category?: Array<string>;
+    query?: string;
+    categories?: Array<string>;
+  
+}
+
+interface ManifestoProps {
+    whatIs: boolean;
+    openDashboard: () => void
+}
+// Roles
+
+interface CustomComponentProps {
+    value: string;
+    onValueChange: (value: { name: string ,coords: number[] }) => void;
+}
+
+interface Order extends Models.Document {
+  accountId: string;
+  userAddress: string;
+  totalAmount: number;
+  status: string;
+  items: OrderItem[];
+  time: string;
+}
