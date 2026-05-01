@@ -45,7 +45,7 @@ const checkout = async () => {
 
 
     const res = await createOrder({
-      accountId: user?.accountId,
+      customerId: user?.accountId,
       items,
       totalAmount: totaal,
       time: watTime,

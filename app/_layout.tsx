@@ -1,4 +1,4 @@
-import { Stack} from "expo-router";
+import { Stack, useRouter } from "expo-router"; // add useRouter
 import './globals.css'
 import * as Sentry from '@sentry/react-native';
 import { useFonts } from "expo-font";
@@ -10,76 +10,61 @@ import * as Notifications from 'expo-notifications';
 import { usePushToken } from "@/hooks/usePushTarget";
 
 
+// Set handler OUTSIDE the component
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 Sentry.init({
   dsn: 'https://091d6dc0e833f31b86fe46c82e15794d@o4510487902027776.ingest.us.sentry.io/4510726290800640',
-
-  // Adds more context data to events (IP address, cookies, user, etc.)
-  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
   sendDefaultPii: true,
-
-  // Enable Logs
   enableLogs: true,
-
-  // Configure Session Replay
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1,
   integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
-
-  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // spotlight: __DEV__,
 });
-
-
-
 
 export default Sentry.wrap(function RootLayout() {
+  const router = useRouter(); // add this
   const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
-     "Crispy": require("../assets/fonts/Crispy.otf"),
-  })
-  const {isLoading, fetchAuthenticatedUser, user} = useAuthStore();
+    "Crispy": require("../assets/fonts/Crispy.otf"),
+  });
+  const { isLoading, fetchAuthenticatedUser, user } = useAuthStore();
 
- 
+  
 
- useEffect(() => {
-    // splash screen should not be hidden and should show before app loads
+  useEffect(() => {
     if (error) throw error;
     if (fontsLoaded) SplashScreen.hideAsync();
-    
   }, [fontsLoaded, error]);
 
-  useEffect(()=>{   
-    fetchAuthenticatedUser()
-    
-  },[])
-
-  if (user){
-    usePushToken(user.$id)
-
-      useEffect(() => {
-    const sub = Notifications.addNotificationResponseReceivedListener((response) => {
-      const { orderId } = response.notification.request.content.data as {
-        orderId: string;
-      };
-      console.log(orderId)
-    });
-    return () => sub.remove();
+  useEffect(() => {
+    fetchAuthenticatedUser();
   }, []);
-  }
-
-  if(isLoading && !fontsLoaded) return null;
 
  
+  usePushToken(user?.$id) 
+
+  // Notification tap listener
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      const { orderId } = response.notification.request.content.data;
+      if (orderId) console.log(orderId)
+    });
+
+    return () => subscription.remove(); // cleanup on unmount
+  }, []);
+
+  if (isLoading && !fontsLoaded) return null;
+
   return (
-  <GestureHandlerRootView style={{flex:1}}>
-  <Stack screenOptions={{headerShown: false}}/>
-  </GestureHandlerRootView>
-   
-
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </GestureHandlerRootView>
   );
-
-
-
 });
-
-

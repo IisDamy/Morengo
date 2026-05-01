@@ -8,8 +8,8 @@ import Animated, {
   withDelay
 } from "react-native-reanimated";
 import { color } from "@/constants";
-const SMALL = 10;
-const LARGE = 300;
+const SMALL = 60;
+const LARGE = 250;
 const DEFAULT = 160;
 const RADIUS = 15;
 const FULL_RADIUS = 999;

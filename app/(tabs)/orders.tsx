@@ -8,7 +8,7 @@ import useAuthStore from '@/store/auth.store'
 import { Order } from '@/types'
 import { useCartStore } from '@/store/cart.auth.store'
 import { subscribeToOrders } from '@/lib/appwrite'
-
+import { Client } from 'react-native-appwrite'
 const orders = () => {
   const { user } = useAuthStore()
   const [activeGroup, setActiveGroup] = useState('Pending')
@@ -40,7 +40,7 @@ const orders = () => {
     const unsubscribe = subscribeToOrders()
     return () => {
       unsubscribe()
-      // getOrders()
+      getOrders()
     }
     
   }, [])
@@ -102,7 +102,7 @@ const orders = () => {
                   onLongPress={() =>
                     setOpenCancelPending(openCancelPending === order.$id ? null : order.$id)
                   }
-                  delayLongPress={500}
+                  delayLongPress={300}
                 >
                   <View className='mt-4 w-full border-b p-1 border-zinc-300'>
                     {/* User name + time */}

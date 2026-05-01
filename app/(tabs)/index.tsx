@@ -5,7 +5,7 @@ import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import { use, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Pressable,
@@ -21,12 +21,13 @@ import Animated from "react-native-reanimated";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import GridAnim from "@/components/BotttomGridMain";
+import { TextInput } from "react-native-gesture-handler";
 
 
 export default function Index() {
   const { onScroll } = useTabBarVisibility();
   const [seeAll, toggleSeeAll] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState('')
 
 
 
@@ -108,17 +109,23 @@ export default function Index() {
                 morengo
               </Text>
                   
-              <Pressable onPress={()=> router.push('/(screens)/SearchPage')}>
+
                 <View className="relative  flex flex-row top-[12] bg-white px-3 w-[135] items-center rounded-[10] h-10 rounded">
+                  {searchQuery.length ?? 
                   <Ionicons
                     name="search-outline"
                     size={14}
                     color="gray"
                     className="mr-[2] relative"
+                  />}
+                  <TextInput className=" text-zinc-400 " placeholder="search..." 
+                  value={searchQuery}
+                  onChangeText={(text)=> setSearchQuery(text)}
+                  onSubmitEditing={() => router.push(`/(screens)/SearchPage?query==${searchQuery}`)}
+                  
                   />
-                  <Text className=" text-zinc-400 ">search...</Text>
                 </View>
-              </Pressable>
+       
             </View>
           </View>
           {/* main */}

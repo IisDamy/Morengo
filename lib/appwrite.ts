@@ -14,7 +14,7 @@ import {
   Query,
   TablesDB,
 } from "react-native-appwrite";
-import WebSocket from 'react-native-websocket';
+
 
 
 // # dont forget to delete this and add complete eas build for secrets before launch
@@ -612,7 +612,7 @@ export const fetchOrders = async (accountId: string): Promise<Order[]> => {
     databaseId: appwriteConfig.databaseId,
     tableId: 'orders',
     queries: [
-      Query.equal('accountId', accountId),
+      Query.equal('customerId', accountId),
       Query.equal('status', 'pending'),
       Query.orderDesc('$createdAt'),
     ],
@@ -634,13 +634,13 @@ export const deleteOrder = async (rowId: string) => {
 
 
 export const createOrder = async ({
-  accountId,
+  customerId,
   userAddress,
   totalAmount,
   time,
   items
 }: {
-  accountId: string | undefined;
+  customerId: string | undefined;
   userAddress: string;
   totalAmount: number;
   time: string;
@@ -654,7 +654,7 @@ export const createOrder = async ({
       tableId:'orders',
       rowId: ID.unique(),
       data: {
-        accountId,
+        customerId,
         userAddress,
         totalAmount,
         status: "pending",
@@ -671,51 +671,24 @@ export const createOrder = async ({
 
 export function subscribeToOrders() {
   console.log('Subscribing to order updates...');
-  const ws = new WebSocket(
-    `wss://fra.cloud.appwrite.io/v1/realtime?project=${appwriteConfig.projectId}&channels[]=databases.${appwriteConfig.databaseId}.collections.orders.documents.*`
+
+  const unsubscribe = client.subscribe(
+    `databases.${appwriteConfig.databaseId}.collections.orders.documents`,
+    (response) => {
+      // response.events tells you what happened (create, update, delete)
+      console.log('something is happening...')
+      if (response.events.includes('databases.*.collections.*.documents.*.create')) {
+        console.log('Order created', response.payload);
+        // update state as needed
+      }
+    }
   );
 
-  ws.onopen = () => {
-    console.log('Realtime connected');
-  };
 
-  ws.onmessage = (event:any) => {
-    console.log('Realtime connected');
-    try {
-      const data = JSON.parse(event.data);
-      
-      // ✅ when document is created
-      if (
-        data.events &&
-        data.events.includes('databases.*.collections.*.documents.*.create')
-      ) {
-        console.log('Order created');
 
-        // optional: update state if needed
-        if (data.payload?.status) {
-          // setOrderStatus(data.payload.status);
-          console.log('Order status updated to:', data.payload.status);
-        }
-
-        ws.onerror = (err:any) => {
-  console.error('WebSocket error:', err);
-};
-
-      }
-    } catch (err) {
-      console.error('WebSocket error:', err);
-    }
-  };
-
-  ws.onerror = (error:any) => {
-    console.error('WebSocket connection error:', error);
-  };
-
-  // cleanup function
+  // Return cleanup function
   return () => {
-    // ws.close();
-   
-
+    unsubscribe();
   };
 }
 
